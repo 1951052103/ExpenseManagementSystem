@@ -12,6 +12,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
 <script src="<c:url value="/js/pagination.js" />"></script>
+<script src="<c:url value="/js/expenseAction.js" />"></script>
 
 <h1 class="text-center text-danger"><spring:message code="label.expense" /></h1>
 <div class="container mt-3">    
@@ -60,42 +61,66 @@
         </form>
     </div>
 
+    <c:url value="/api/expense" var="url" />        
     <table class="table">
         <tr>
-            <th><spring:message code="amount" /></th>
+            <th><spring:message code="amount" /> (<spring:message code="currency" />)</th>
             <th><spring:message code="expense.purpose" /></th>
             <th><spring:message code="date" /></th>
             <th><spring:message code="description" /></th>
+            <th></th>
+            <th></th>
         </tr>
 
         <c:forEach items="${expenses}" var="e">
-            <tr id="${e.id}">
+            <tr id="row${e.id}">
                 <td>
-                    <fmt:formatNumber value="${e.amount}" maxFractionDigits="3" type = "number" /> <spring:message code="currency" />
+                    <input type="number" class="form-control" value="${e.amount}"/>
                 </td>
-                <td>${e.purpose}</td>
                 <td>
-                    <script>
-                        document.getElementById("${e.id}").cells[2].innerHTML =
-                                moment("${e.date}").locale("<spring:message code="locale" />").format('LL');
-                    </script>
+                    <input type="text" class="form-control" value="${e.purpose}"/>
                 </td>
-                <td>${e.description}</td>
+                <td>
+                    <fmt:formatDate pattern="yyyy-MM-dd" value="${e.date}" var="date"/>
+                    <input type="date" class="form-control" value="${date}" />
+                </td>
+                <td>
+                    <textarea class="form-control">${e.description}</textarea>
+                </td>
+                <td>
+                    <input type="button" class="btn btn-primary" value="<spring:message code="button.update" />" />
+                </td>
+                <td>
+                    <div class="spinner-border text-info" style="display:none" id="load${e.id}"></div>
+                    <input type="button" 
+                           onclick="deleteExpense('${url}/${e.id}', ${e.id}, this, '<spring:message code="message.delete" />', '<spring:message code="message.error" />')" 
+                           class="btn btn-danger" value="<spring:message code="button.delete" />" />
+                </td>
             </tr>
         </c:forEach>
     </table>
 
-    <ul class="pagination">
-        <c:forEach begin="1" end="${Math.ceil(expenseCounter/pageSize)}" var="i">
-            <c:url value="/expense" var="u">
-                <c:param name="kw" value="${kw}" />
-                <c:param name="fromDate" value="${fd}" />
-                <c:param name="toDate" value="${td}" />
-                <c:param name="pageSize" value="${pageSize}" />
-                <c:param name="page" value="${i}" />
-            </c:url>
-            <li class="page-item"><a class="page-link" href="${u}">${i}</a></li>
-        </c:forEach>
-    </ul>
-</div>
+    <c:if test="${pageSize > 0 && Math.ceil(expenseCounter/pageSize) > 1}">
+        <ul class="pagination">
+            <c:forEach begin="1" end="${Math.ceil(expenseCounter/pageSize)}" var="i">
+                <c:url value="/expense" var="u">
+                    <c:param name="kw" value="${kw}" />
+                    <c:param name="fromDate" value="${fd}" />
+                    <c:param name="toDate" value="${td}" />
+                    <c:param name="pageSize" value="${pageSize}" />
+                    <c:param name="page" value="${i}" />
+                </c:url>
 
+                <c:choose>
+                    <c:when test="${page == i}">
+                        <li class="page-item"><a class="page-link bg-primary text-light" href="${u}">${i}</a></li>  
+                    </c:when>
+                    <c:otherwise>
+                        <li class="page-item"><a class="page-link" href="${u}">${i}</a></li>   
+                    </c:otherwise>
+                </c:choose>
+
+            </c:forEach>
+        </ul>
+    </c:if>
+</div>

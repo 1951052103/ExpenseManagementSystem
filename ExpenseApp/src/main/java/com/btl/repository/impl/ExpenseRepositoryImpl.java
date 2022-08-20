@@ -8,6 +8,7 @@ import com.btl.pojo.Expense;
 import com.btl.pojo.User;
 import com.btl.repository.ExpenseRepository;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
     private LocalSessionFactoryBean sessionFactory;
     
     @Override
-    public List<Expense> getExpenses(Map<String, String> params, int page) {
+    public List<Expense> getExpenses(Map<String, String> params, int pageSize, int page) {
         Session session = this.sessionFactory.getObject().getCurrentSession();
         CriteriaBuilder b = session.getCriteriaBuilder();
         CriteriaQuery<Expense> q = b.createQuery(Expense.class);
@@ -52,7 +53,7 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
         predicates.add(p2);
 
-        if (params != null) {
+        if (params != null && !params.isEmpty()) {
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
                 Predicate p = b.like(root.get("purpose").as(String.class),
@@ -75,11 +76,25 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
             }
         }
         
+        else {
+            LocalDate today = LocalDate.now();
+            LocalDate start = today.withDayOfMonth(1);
+            LocalDate end = today.withDayOfMonth(today.getMonth().length(today.isLeapYear()));
+            
+            Predicate p3 = b.greaterThanOrEqualTo(root.get("date").as(Date.class),
+                    Date.valueOf(start));
+            predicates.add(p3);
+            
+            Predicate p4 = b.lessThanOrEqualTo(root.get("date").as(Date.class),
+                    Date.valueOf(end));
+            predicates.add(p4);
+        }
+        
         q.where(predicates.toArray(new Predicate[]{}));
         q.orderBy(b.desc(root.get("id")));
-        Query query = session.createQuery(q);
         
-        int pageSize = Integer.parseInt(params.getOrDefault("pageSize", env.getProperty("page.key.10")));
+        Query query = session.createQuery(q);
+  
         if (pageSize > 0) {
             int start = (page - 1) * pageSize;
             query.setFirstResult(start);
@@ -133,5 +148,20 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         Query query = session.createQuery(q);
 
         return Integer.parseInt(query.getSingleResult().toString());
+    }
+    
+    @Override
+    public boolean deleteExpense(int id) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        
+        try {
+            Expense e = session.get(Expense.class, id);
+            session.delete(e);
+            
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
     }
 }

@@ -22,13 +22,18 @@ public class ExpenseServiceImpl implements ExpenseService{
     private ExpenseRepository expenseRepository; 
     
     @Override
-    public List<Expense> getExpenses(Map<String, String> params, int page) {
-        return this.expenseRepository.getExpenses(params, page);
+    public List<Expense> getExpenses(Map<String, String> params, int pageSize, int page) {
+        return this.expenseRepository.getExpenses(params, pageSize, page);
     }
 
     @Override
     public int countExpense(Map<String, String> map) {
         return this.expenseRepository.countExpense(map);
+    }
+
+    @Override
+    public boolean deleteExpense(int id) {
+        return this.expenseRepository.deleteExpense(id);
     }
     
 }

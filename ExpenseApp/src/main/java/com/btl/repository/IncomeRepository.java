@@ -13,5 +13,7 @@ import java.util.Map;
  * @author admin
  */
 public interface IncomeRepository {
-    List<Income> getIncomes(Map<String, String> params, int page);
+    List<Income> getIncomes(Map<String, String> params, int pageSize, int page);
+    int countIncome(Map<String, String> params);
+    boolean deleteIncome(int id);
 }

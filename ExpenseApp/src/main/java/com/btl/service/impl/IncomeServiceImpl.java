@@ -23,7 +23,17 @@ public class IncomeServiceImpl implements IncomeService {
     private IncomeRepository incomeRepository;
 
     @Override
-    public List<Income> getIncomes(Map<String, String> params, int page) {
-        return this.incomeRepository.getIncomes(params, page);
+    public List<Income> getIncomes(Map<String, String> params, int pageSize, int page) {
+        return this.incomeRepository.getIncomes(params, pageSize, page);
+    }
+
+    @Override
+    public int countIncome(Map<String, String> params) {
+        return this.incomeRepository.countIncome(params);
+    }
+
+    @Override
+    public boolean deleteIncome(int id) {
+        return this.incomeRepository.deleteIncome(id);
     }
 }

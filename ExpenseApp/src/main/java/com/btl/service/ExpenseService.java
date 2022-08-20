@@ -13,6 +13,7 @@ import java.util.Map;
  * @author admin
  */
 public interface ExpenseService {
-    List<Expense> getExpenses(Map<String, String> params, int page);
+    List<Expense> getExpenses(Map<String, String> params, int pageSize, int page);
     int countExpense(Map<String, String> params);
+    boolean deleteExpense(int id);
 }

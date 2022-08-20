@@ -90,4 +90,16 @@ CREATE TABLE `income` (
     FOREIGN KEY (`group_id`) REFERENCES `custom_group` (`id`) ON DELETE SET NULL
 );
 
-INSERT INTO `income`(`user_id`, `group_id`, `amount`, `source`) VALUES (1, NULL, 30000000, 'salary');
+INSERT INTO `income`(`user_id`, `group_id`, `amount`, `source`) VALUES (1, NULL, 30000000, 'salary'),
+(1, NULL, 30000000, 'salary'),
+(1, NULL, 30000000, 'salary'),
+(1, NULL, 30000000, 'salary'),
+(1, NULL, 30000000, 'salary'),
+(1, NULL, 30000000, 'salary'),
+(1, NULL, 30000000, 'salary'),
+(1, NULL, 30000000, 'salary'),
+(1, NULL, 30000000, 'salary'),
+(1, NULL, 30000000, 'salary'),
+(1, NULL, 30000000, 'salary'),
+(1, NULL, 30000000, 'salary'),
+(1, NULL, 30000000, 'salary');
