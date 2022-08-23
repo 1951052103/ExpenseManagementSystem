@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -32,7 +34,7 @@ public class IncomeController {
         int page = Integer.parseInt(params.getOrDefault("page", "1"));
         
         model.addAttribute("incomes", this.incomeService.getIncomes(params, pageSize, page));
-        model.addAttribute("incomeCounter", this.incomeService.countIncome(params));
+        model.addAttribute("IncomeCounter", this.incomeService.countIncome(params));
         
         Map<String, Integer> sizes = new HashMap<>();
         sizes.put(env.getProperty("page.key.10"), Integer.parseInt(env.getProperty("page.value.10")));

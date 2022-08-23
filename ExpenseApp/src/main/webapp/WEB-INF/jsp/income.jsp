@@ -16,7 +16,7 @@
 
 <h1 class="text-center text-danger"><spring:message code="label.income" /></h1>
 
-<div class="container mt-3">
+<div>
     <div>
         <label for="page-size" class="form-label"><spring:message code="label.pagesize" /></label>
         <select id="page-size" name="page-size" onchange="setPageSize(event)">
@@ -34,7 +34,7 @@
             </c:forEach>
         </select>
     </div>
-    
+
     <div>
         <c:url value="/income" var="action" />
         <form method="get" action="${action}" class="d-flex">
@@ -61,7 +61,7 @@
 
         </form>
     </div>    
-            
+
     <c:url value="/api/income" var="url" />
     <table class="table">
         <tr>
@@ -100,10 +100,10 @@
             </tr>
         </c:forEach>
     </table>
-            
-    <c:if test="${pageSize > 0 && Math.ceil(incomeCounter/pageSize) > 1}">
+
+    <c:if test="${pageSize > 0 && Math.ceil(IncomeCounter/pageSize) > 1}">
         <ul class="pagination">
-            <c:forEach begin="1" end="${Math.ceil(incomeCounter/pageSize)}" var="i">
+            <c:forEach begin="1" end="${Math.ceil(IncomeCounter/pageSize)}" var="i">
                 <c:url value="/income" var="u">
                     <c:param name="kw" value="${kw}" />
                     <c:param name="fromDate" value="${fd}" />
@@ -115,13 +115,13 @@
                 <c:choose>
                     <c:when test="${page == i}">
                         <li class="page-item"><a class="page-link bg-primary text-light" href="${u}">${i}</a></li>  
-                    </c:when>
-                    <c:otherwise>
+                        </c:when>
+                        <c:otherwise>
                         <li class="page-item"><a class="page-link" href="${u}">${i}</a></li>   
-                    </c:otherwise>
-                </c:choose>
+                        </c:otherwise>
+                    </c:choose>
 
             </c:forEach>
         </ul>
-    </c:if>        
+    </c:if>
 </div>

@@ -15,7 +15,7 @@
 <script src="<c:url value="/js/expenseAction.js" />"></script>
 
 <h1 class="text-center text-danger"><spring:message code="label.expense" /></h1>
-<div class="container mt-3">    
+<div>    
     <div>
         <label for="page-size" class="form-label"><spring:message code="label.pagesize" /></label>
         <select id="page-size" name="page-size" onchange="setPageSize(event)">

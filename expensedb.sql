@@ -21,8 +21,8 @@ CREATE TABLE `user` (
 );
 
 INSERT INTO `user`(`username`, `password` ,`first_name`, `gender`, `role`) 
-VALUES ('admin', '202cb962ac59075b964b07152d234b70', 'admin', 1, 'ADMIN'),
-('user', '202cb962ac59075b964b07152d234b70', 'user', 1, 'USER');
+VALUES ('admin', '$2a$10$5X9k5N1sTc1/CjVH5XJoje3QMYijH3ETpgkox00R0MdPaJPPrf7wO', 'admin', 1, 'ADMIN'),
+('user', '$2a$10$5X9k5N1sTc1/CjVH5XJoje3QMYijH3ETpgkox00R0MdPaJPPrf7wO', 'user', 1, 'USER');
 
 CREATE TABLE `custom_group` (
 	`id` int NOT NULL AUTO_INCREMENT,

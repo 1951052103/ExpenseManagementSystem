@@ -16,7 +16,11 @@
     </head>
     <body>
     <tiles:insertAttribute name="header" />
-    <tiles:insertAttribute name="content" />
+    
+    <div class="container mt-3">
+        <tiles:insertAttribute name="content" />
+    </div>
+
     <tiles:insertAttribute name="footer" />
 </body>
 </html>

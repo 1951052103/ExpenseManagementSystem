@@ -7,6 +7,7 @@ package com.btl.repository.impl;
 import com.btl.pojo.Expense;
 import com.btl.pojo.User;
 import com.btl.repository.ExpenseRepository;
+import com.btl.repository.UserRepository;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +39,8 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
     private Environment env;
     @Autowired
     private LocalSessionFactoryBean sessionFactory;
+    @Autowired
+    private UserRepository userRepository;
     
     @Override
     public List<Expense> getExpenses(Map<String, String> params, int pageSize, int page) {
@@ -46,8 +51,12 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         Root root = q.from(Expense.class);
         q.select(root);
         
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+                
         List<Predicate> predicates = new ArrayList<>();
-        Predicate p1 = b.equal(root.get("userId").as(User.class), session.get(User.class, 1));
+        Predicate p1 = b.equal(root.get("userId").as(User.class), 
+                this.userRepository.getUserByUsername(currentPrincipalName));
         predicates.add(p1);
         
         Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
@@ -113,8 +122,12 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         Root root = q.from(Expense.class);
         q.select(b.count(root.get("id")));
         
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        
         List<Predicate> predicates = new ArrayList<>();
-        Predicate p1 = b.equal(root.get("userId").as(User.class), session.get(User.class, 1));
+        Predicate p1 = b.equal(root.get("userId").as(User.class), 
+                this.userRepository.getUserByUsername(currentPrincipalName));
         predicates.add(p1);
         
         Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
