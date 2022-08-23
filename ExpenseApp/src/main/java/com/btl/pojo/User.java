@@ -19,10 +19,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -64,6 +67,7 @@ public class User implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "password")
     private String password;
+    private String confirmPassword;
     @Size(max = 45)
     @Column(name = "first_name")
     private String firstName;
@@ -86,6 +90,7 @@ public class User implements Serializable {
     @Column(name = "email")
     private String email;
     // @Pattern(regexp="^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$", message="Invalid phone/fax format, should be as xxx-xxx-xxxx")//if the field contains phone or fax number consider using this annotation to enforce field validation
+    @Pattern(regexp = "[0-9]{10}")
     @Size(max = 10)
     @Column(name = "phone")
     private String phone;
@@ -100,7 +105,9 @@ public class User implements Serializable {
     private Set<GroupUser> groupUserSet;
     @OneToMany(mappedBy = "userId")
     private Set<Expense> expenseSet;
-
+    @Transient
+    private MultipartFile file;
+    
     public User() {
     }
 
@@ -138,6 +145,14 @@ public class User implements Serializable {
         this.password = password;
     }
 
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = password;
+    }
+    
     public String getFirstName() {
         return firstName;
     }
@@ -216,6 +231,14 @@ public class User implements Serializable {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
     }
 
     @XmlTransient

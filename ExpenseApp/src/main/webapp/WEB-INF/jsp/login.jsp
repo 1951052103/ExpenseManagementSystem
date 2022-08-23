@@ -12,20 +12,22 @@
 
 <h1 class="text-center text-danger"><spring:message code="header.login" /></h1>
 
+<c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION.message}">
+  <div class="alert alert-danger">
+    ${SPRING_SECURITY_LAST_EXCEPTION.message}
+  </div>
+</c:if>
+
 <c:url value="/login" var="action" />
 
 <form:form method="post" modelAttribute="user" action="${action}">
-    <form:errors path="*" element="div" cssClass="alert alert-danger" />
-    
     <div class="form-group">
         <label for="username"><spring:message code="label.username" /></label>
         <form:input type="text" id="username" path="username" class="form-control" />
-        <form:errors path="username" element="div" cssClass="alert alert-danger" />
     </div>
     <div class="form-group">
         <label for="password"><spring:message code="label.password" /></label>
         <form:input type="password" id="password" path="password" class="form-control" />
-        <form:errors path="password" element="div" cssClass="alert alert-danger" />
     </div>
     <br/>
     <div class="form-group">

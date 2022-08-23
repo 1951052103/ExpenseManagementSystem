@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
  * @author admin
  */
 @Controller
-public class LoginController {
+public class UserController {
 
     @GetMapping("/login")
     public String login(Model model) {
@@ -36,5 +36,23 @@ public class LoginController {
         }
 
         return "redirect:/";
+    }
+    
+    @GetMapping("/register")
+    public String register(Model model) {
+        model.addAttribute("user", new User());
+
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public String registerProcess(Model model,
+            @ModelAttribute(value = "user") @Valid User u,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            return "register";
+        }
+
+        return "redirect:/login";
     }
 }
