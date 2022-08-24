@@ -7,6 +7,7 @@ package com.btl.service;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import com.btl.pojo.User;
+import org.springframework.stereotype.Component;
 
 /**
  *
@@ -14,4 +15,6 @@ import com.btl.pojo.User;
  */
 public interface UserService extends UserDetailsService {
     User getUserByUsername(String username);
+    int countUserByUsername(String username);
+    boolean addUser(User user);
 }

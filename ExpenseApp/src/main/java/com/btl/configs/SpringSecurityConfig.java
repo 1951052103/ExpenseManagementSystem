@@ -29,7 +29,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
     "com.btl.controllers",
     "com.btl.repository",
     "com.btl.service",
-    "com.btl.handlers"
+    "com.btl.handlers",
+    "com.btl.validator",
 })
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 

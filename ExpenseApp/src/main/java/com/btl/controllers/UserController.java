@@ -5,11 +5,16 @@
 package com.btl.controllers;
 
 import com.btl.pojo.User;
+import com.btl.service.UserService;
+import com.btl.validator.SpringUserValidator;
 import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -19,6 +24,16 @@ import org.springframework.web.bind.annotation.PostMapping;
  */
 @Controller
 public class UserController {
+
+    @Autowired
+    private SpringUserValidator userValidator;
+    @Autowired
+    private UserService userService;
+    
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.setValidator(userValidator);
+    }
 
     @GetMapping("/login")
     public String login(Model model) {
@@ -37,7 +52,7 @@ public class UserController {
 
         return "redirect:/";
     }
-    
+
     @GetMapping("/register")
     public String register(Model model) {
         model.addAttribute("user", new User());
@@ -52,7 +67,10 @@ public class UserController {
         if (result.hasErrors()) {
             return "register";
         }
+        
+        if (this.userService.addUser(u) == true)
+            return "redirect:/login";
 
-        return "redirect:/login";
+        return "register";
     }
 }

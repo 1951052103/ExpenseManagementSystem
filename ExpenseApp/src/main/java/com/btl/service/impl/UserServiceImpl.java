@@ -51,4 +51,18 @@ public class UserServiceImpl implements UserService {
                 user.getUsername(), user.getPassword(), authorities);
     }
 
+    @Override
+    public int countUserByUsername(String username) {
+        return this.userRepository.countUserByUsername(username);
+    }
+
+    @Override
+    public boolean addUser(User user) {
+        user.setRole(User.UserRole.USER.toString());
+        user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setAvatar("https://res.cloudinary.com/dxxwcby8l/image/upload/v1647248652/dkeolz3ghc0eino87iec.jpg");
+        
+        return this.userRepository.addUser(user);
+    }
+
 }

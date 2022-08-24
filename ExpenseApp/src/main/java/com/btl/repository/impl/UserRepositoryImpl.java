@@ -31,6 +31,7 @@ public class UserRepositoryImpl implements UserRepository {
         Session session = this.sessionFactory.getObject().getCurrentSession();
         CriteriaBuilder b = session.getCriteriaBuilder();
         CriteriaQuery<User> q = b.createQuery(User.class);
+        
         Root root = q.from(User.class);
         q.select(root);
 
@@ -41,4 +42,33 @@ public class UserRepositoryImpl implements UserRepository {
         return (User) query.getSingleResult();
     }
     
+    @Override
+    public int countUserByUsername(String username){
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<Long> q = b.createQuery(Long.class);
+        
+        Root root = q.from(User.class);
+        q.select(b.count(root.get("id")));
+        
+        q.where( b.equal(root.get("username"), username) );
+        Query query = session.createQuery(q);
+
+        return Integer.parseInt(query.getSingleResult().toString());
+    }
+
+    @Override
+    public boolean addUser(User user) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+
+        try {
+            session.save(user);
+            return true;
+        } 
+        catch (Exception ex) {
+            session.clear();
+            ex.printStackTrace();
+            return false;
+        }
+    }
 }

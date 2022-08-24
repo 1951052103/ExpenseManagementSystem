@@ -12,4 +12,6 @@ import com.btl.pojo.User;
  */
 public interface UserRepository {
     User getUserByUsername(String username);
+    int countUserByUsername(String username);
+    boolean addUser(User user);
 }

@@ -21,10 +21,12 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -51,6 +53,11 @@ import org.springframework.web.multipart.MultipartFile;
     @NamedQuery(name = "User.findByRole", query = "SELECT u FROM User u WHERE u.role = :role")})
 public class User implements Serializable {
 
+    public enum UserRole {
+        USER,
+        ADMIN
+    }
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,6 +74,7 @@ public class User implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "password")
     private String password;
+    @Transient
     private String confirmPassword;
     @Size(max = 45)
     @Column(name = "first_name")
@@ -81,6 +89,7 @@ public class User implements Serializable {
     private Boolean gender;
     @Column(name = "date_of_birth")
     @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dateOfBirth;
     @Column(name = "registration_date")
     @Temporal(TemporalType.DATE)
@@ -90,7 +99,6 @@ public class User implements Serializable {
     @Column(name = "email")
     private String email;
     // @Pattern(regexp="^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$", message="Invalid phone/fax format, should be as xxx-xxx-xxxx")//if the field contains phone or fax number consider using this annotation to enforce field validation
-    @Pattern(regexp = "[0-9]{10}")
     @Size(max = 10)
     @Column(name = "phone")
     private String phone;
@@ -107,7 +115,7 @@ public class User implements Serializable {
     private Set<Expense> expenseSet;
     @Transient
     private MultipartFile file;
-    
+
     public User() {
     }
 
@@ -150,9 +158,9 @@ public class User implements Serializable {
     }
 
     public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = password;
+        this.confirmPassword = confirmPassword;
     }
-    
+
     public String getFirstName() {
         return firstName;
     }
@@ -292,5 +300,5 @@ public class User implements Serializable {
     public String toString() {
         return "com.btl.pojo.User[ id=" + id + " ]";
     }
-    
+
 }

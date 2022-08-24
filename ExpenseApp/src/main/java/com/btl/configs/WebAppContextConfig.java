@@ -4,6 +4,10 @@
  */
 package com.btl.configs;
 
+import com.btl.validator.SpringUserValidator;
+import com.btl.validator.WebAppValidator;
+import java.util.HashSet;
+import java.util.Set;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -30,7 +34,8 @@ import org.springframework.web.servlet.view.JstlView;
 @ComponentScan(basePackages = {
     "com.btl.controllers",
     "com.btl.service",
-    "com.btl.repository"
+    "com.btl.repository",
+    "com.btl.validator",
 })
 public class WebAppContextConfig implements WebMvcConfigurer {
 
@@ -43,31 +48,52 @@ public class WebAppContextConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/js/**").addResourceLocations("/resources/js/");
     }
-    
+
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource resource = new ResourceBundleMessageSource();
         resource.setBasename("messages");
+
         return resource;
     }
-    
+
     @Override
     public Validator getValidator() {
         return validator();
     }
-    
+
     @Bean(name = "validator")
-    public Validator validator() {
+    public LocalValidatorFactoryBean validator() {
         LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
         bean.setValidationMessageSource(messageSource());
+
         return bean;
     }
     
+    @Bean(name = "beanValidator")
+    public javax.validation.Validator beanValidator() {
+        LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
+        bean.setValidationMessageSource(messageSource());
+
+        return bean;
+    }
+
     @Bean
     public CommonsMultipartResolver multipartResolver() {
-        CommonsMultipartResolver resolver
-                = new CommonsMultipartResolver();
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
         resolver.setDefaultEncoding("UTF-8");
+
         return resolver;
+    }
+
+    @Bean
+    public WebAppValidator userValidator() {
+        Set<Validator> springValidators = new HashSet<>();
+        springValidators.add(new SpringUserValidator());
+
+        WebAppValidator validator = new WebAppValidator();
+        validator.setSpringValidators(springValidators);
+
+        return validator;
     }
 }

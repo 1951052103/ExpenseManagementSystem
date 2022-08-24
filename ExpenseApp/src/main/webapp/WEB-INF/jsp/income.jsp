@@ -4,6 +4,7 @@
     Author     : admin
 --%>
 
+<%@ taglib  prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -41,22 +42,23 @@
 
             <div class="mb-3 mt-3">
                 <label for="source" class="form-label"><spring:message code="label.source" /></label>
-                <input type="text" value="${kw}" class="form-control" id="source" placeholder="<spring:message code="form.income.keyword" />" name="kw">
+                <input type="text" value="${kw}" class="form-control" id="source" 
+                       placeholder="<spring:message code='form.income.keyword' />" name="kw" />
             </div>
 
             <div class="mb-3 mt-3">
                 <label for="from-date" class="form-label"><spring:message code="label.fromdate" /></label>
-                <input type="date" value="${fd}" class="form-control" id="from-date" name="fromDate">
+                <input type="date" value="${fd}" class="form-control" id="from-date" name="fromDate" />
             </div>
 
             <div class="mb-3 mt-3">
                 <label for="to-date" class="form-label"><spring:message code="label.todate" /></label>
-                <input type="date" value="${td}" class="form-control" id="to-date" name="toDate">
+                <input type="date" value="${td}" class="form-control" id="to-date" name="toDate" />
             </div>   
 
             <div class="mb-3 mt-3">
                 <label for="search" class="form-label">_</label>
-                <input type="submit" id="search" value="<spring:message code="form.search" />" class="form-control btn btn-primary" />
+                <input type="submit" id="search" value="<spring:message code='form.search' />" class="form-control btn btn-primary" />
             </div> 
 
         </form>

@@ -40,7 +40,8 @@
 
             <div class="mb-3 mt-3">
                 <label for="purpose" class="form-label"><spring:message code="label.purpose" /></label>
-                <input type="text" value="${kw}" class="form-control" id="purpose" placeholder="<spring:message code="form.expense.keyword" />" name="kw">
+                <input type="text" value="${kw}" class="form-control" id="purpose" 
+                       placeholder="<spring:message code="form.expense.keyword" />" name="kw">
             </div>
 
             <div class="mb-3 mt-3">
