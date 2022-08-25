@@ -4,6 +4,7 @@
     Author     : admin
 --%>
 
+<%@ taglib  prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -15,6 +16,37 @@
 <script src="<c:url value="/js/expenseAction.js" />"></script>
 
 <h1 class="text-center text-danger"><spring:message code="label.expense" /></h1>
+
+<c:url value="/expense" var="action" />
+<form:form method="post" action="${action}" modelAttribute="expense">
+    <form:errors path="*" element="div" cssClass="alert alert-danger" />
+    
+    <div class="form-group">
+        <label for="amount"><spring:message code="amount" /> (<spring:message code="currency" />)</label>
+        <form:input type="number" id="amount" path="amount" class="form-control" required="required" />
+    </div>
+    <div class="form-group">
+        <label for="purpose"><spring:message code="expense.purpose" /></label>
+        <form:input type="text" id="purpose" path="purpose" class="form-control" required="required" />
+    </div>
+    <div class="form-group">
+        <label for="date"><spring:message code="date" /></label>
+        <form:input type="date" id="date" path="date" class="form-control" value="${today}" required="required" />
+    </div>
+    <div class="form-group">
+        <label for="description">
+            <spring:message code="description" /> <spring:message code="label.optional" />
+        </label>
+        <form:textarea type="text" id="description" path="description" class="form-control" />
+    </div>
+        
+    <br/>
+    <div class="form-group">
+        <input type="submit" value="<spring:message code="button.add" />" class="btn btn-success" />
+    </div> 
+    <br/><br/>
+</form:form>
+
 <div>    
     <div>
         <label for="page-size" class="form-label"><spring:message code="label.pagesize" /></label>
@@ -35,7 +67,6 @@
     </div>    
 
     <div>
-        <c:url value="/expense" var="action" />
         <form method="get" action="${action}" class="d-flex">
 
             <div class="mb-3 mt-3">
@@ -76,20 +107,24 @@
         <c:forEach items="${expenses}" var="e">
             <tr id="row${e.id}">
                 <td>
-                    <input type="number" class="form-control" value="${e.amount}"/>
+                    <input type="number" class="form-control" value="${e.amount}" id="amount-${e.id}" />
                 </td>
                 <td>
-                    <input type="text" class="form-control" value="${e.purpose}"/>
+                    <input type="text" class="form-control" value="${e.purpose}" id="purpose-${e.id}" />
                 </td>
                 <td>
                     <fmt:formatDate pattern="yyyy-MM-dd" value="${e.date}" var="date"/>
-                    <input type="date" class="form-control" value="${date}" />
+                    <input type="date" class="form-control" value="${date}" id="date-${e.id}" />
                 </td>
                 <td>
-                    <textarea class="form-control">${e.description}</textarea>
+                    <textarea class="form-control" id="description-${e.id}">${e.description}</textarea>
                 </td>
+                
                 <td>
-                    <input type="button" class="btn btn-primary" value="<spring:message code="button.update" />" />
+                    <div class="spinner-border text-info" style="display:none" id="updateLoad${e.id}"></div>
+                    <input type="button" 
+                           onclick="updateExpense('${url}/${e.id}', ${e.id}, this, '<spring:message code="message.update" />', '<spring:message code="message.amount.error" />')" 
+                           class="btn btn-primary" value="<spring:message code="button.update" />" />
                 </td>
                 <td>
                     <div class="spinner-border text-info" style="display:none" id="load${e.id}"></div>

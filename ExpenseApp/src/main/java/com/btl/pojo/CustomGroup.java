@@ -4,6 +4,7 @@
  */
 package com.btl.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -49,10 +50,13 @@ public class CustomGroup implements Serializable {
     @Column(name = "active")
     private Boolean active;
     @OneToMany(mappedBy = "groupId")
+    @JsonIgnore
     private Set<Income> incomeSet;
     @OneToMany(mappedBy = "groupId")
+    @JsonIgnore
     private Set<GroupUser> groupUserSet;
     @OneToMany(mappedBy = "groupId")
+    @JsonIgnore
     private Set<Expense> expenseSet;
 
     public CustomGroup() {

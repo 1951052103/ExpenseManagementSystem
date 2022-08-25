@@ -7,6 +7,7 @@ package com.btl.service.impl;
 import com.btl.pojo.Income;
 import com.btl.repository.IncomeRepository;
 import com.btl.service.IncomeService;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,5 +36,25 @@ public class IncomeServiceImpl implements IncomeService {
     @Override
     public boolean deleteIncome(int id) {
         return this.incomeRepository.deleteIncome(id);
+    }
+
+    @Override
+    public BigDecimal getTotalIncome(Map<String, String> params) {
+        return this.incomeRepository.getTotalIncome(params);
+    }
+
+    @Override
+    public boolean addIncome(Income income) {
+        return this.incomeRepository.addIncome(income);
+    }
+
+    @Override
+    public boolean updateIncome(Income income) {
+        return this.incomeRepository.updateIncome(income);
+    }
+
+    @Override
+    public Income getIncomeById(int incomeId) {
+        return this.incomeRepository.getIncomeById(incomeId);
     }
 }

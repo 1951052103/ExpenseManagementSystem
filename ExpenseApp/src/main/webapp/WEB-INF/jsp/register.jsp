@@ -14,10 +14,10 @@
 <c:url value="/register" var="action" />
 
 <form:form method="post" action="${action}" 
-            enctype="multipart/form-data" modelAttribute="user">
-    
+           enctype="multipart/form-data" modelAttribute="user">
+
     <form:errors path="*" element="div" cssClass="alert alert-danger" />
-    
+
     <div class="form-group">
         <label for="username"><spring:message code="label.username" /></label>
         <form:input type="text" id="username" path="username" class="form-control" required="required" />
@@ -33,36 +33,44 @@
         <form:input type="password" id="confirm-password" path="confirmPassword" class="form-control" required="required" />
         <form:errors path="confirmPassword" cssClass="text-danger" />
     </div>
-    
     <div class="form-group">
-        <label for="firstname"><spring:message code="label.firstName" /></label>
+        <label for="role"><spring:message code="label.role" /></label>
+        <form:select id="role" path="role" class="form-control" required="required">
+            <form:option value="USER"><spring:message code="label.role.user" /></form:option>
+            <form:option value="BUSINESS"><spring:message code="label.role.business" /></form:option>
+        </form:select>
+    </div>
+
+    <div class="form-group">
+        <label for="firstname"><spring:message code="label.firstName" /> <spring:message code="label.optional" /></label>
         <form:input type="text" id="firstname" path="firstName" class="form-control" />
         <form:errors path="firstName" cssClass="text-danger" />
     </div>
     <div class="form-group">
-        <label for="lastname"><spring:message code="label.lastName" /></label>
+        <label for="lastname"><spring:message code="label.lastName" /> <spring:message code="label.optional" /></label>
         <form:input type="text" id="lastname" path="lastName" class="form-control" />
         <form:errors path="lastName" cssClass="text-danger" />
     </div>
     <div class="form-group">
-        <label for="email"><spring:message code="label.email" /></label>
+        <label for="email"><spring:message code="label.email" /> <spring:message code="label.optional" /></label>
         <form:input type="email" id="email" path="email" class="form-control" />
         <form:errors path="email" cssClass="text-danger" />
     </div>
     <div class="form-group">
-        <label for="phone"><spring:message code="label.phone" /></label>
+        <label for="phone"><spring:message code="label.phone" /> <spring:message code="label.optional" /></label>
         <form:input type="tel" id="phone" path="phone" class="form-control"  pattern="[0-9]{10}"/>
         <form:errors path="phone" cssClass="text-danger" />
     </div>
     <div class="form-group">
-        <label for="phone"><spring:message code="label.dateOfBirth" /></label>
+        <label for="phone"><spring:message code="label.dateOfBirth" /> <spring:message code="label.optional" /></label>
         <form:input type="date" id="dateOfBirth" path="dateOfBirth" class="form-control" />
         <form:errors path="dateOfBirth" cssClass="text-danger" />
     </div>
-    
+
     <div class="form-group">
-        <label for="avatar"><spring:message code="label.avatar" /></label>
-        <form:input type="file" id="avatar" path="file" class="form-control" />
+        <label for="avatar"><spring:message code="label.avatar" /> <spring:message code="label.optional" /></label>
+        <form:input type="file" id="avatar" path="file" class="form-control"
+                    accept="image/png, image/jpeg" />
     </div>
     <br/>
     <div class="form-group">

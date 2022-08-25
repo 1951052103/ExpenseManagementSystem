@@ -4,16 +4,21 @@
  */
 package com.btl.controllers;
 
+import com.btl.pojo.Expense;
 import com.btl.service.ExpenseService;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -29,8 +34,10 @@ public class ExpenseController {
     @Autowired
     private ExpenseService expenseService;
 
-    @RequestMapping("/expense")
+    @GetMapping("/expense")
     public String expense(Model model, @RequestParam Map<String, String> params) {
+        model.addAttribute("expense", new Expense());
+        
         int pageSize = Integer.parseInt(params.getOrDefault("pageSize", env.getProperty("page.key.10")));
         int page = Integer.parseInt(params.getOrDefault("page", "1"));
         
@@ -44,15 +51,31 @@ public class ExpenseController {
         model.addAttribute("sizes", sizes);
         
         LocalDate today = LocalDate.now();
-        LocalDate start = today.withDayOfMonth(1);
-        LocalDate end = today.withDayOfMonth(today.getMonth().length(today.isLeapYear()));
+        String start = today.withDayOfMonth(1).toString();
+        String end = today.withDayOfMonth(today.getMonth().length(today.isLeapYear())).toString();
         
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("page", page);
         model.addAttribute("kw", params.getOrDefault("kw", ""));
-        model.addAttribute("fd", params.getOrDefault("fromDate", start.toString()));
-        model.addAttribute("td", params.getOrDefault("toDate", end.toString()));
+        model.addAttribute("fd", params.getOrDefault("fromDate", start));
+        model.addAttribute("td", params.getOrDefault("toDate", end));
         
+        model.addAttribute("today", today.toString());
+        
+        return "expense";
+    }
+    
+    @PostMapping("/expense")
+    public String expenseProcess(Model model,
+            @ModelAttribute(value = "expense") @Valid Expense expense,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            return "expense";
+        }
+        
+        if (this.expenseService.addExpense(expense) == true)
+            return "redirect:/expense";
+
         return "expense";
     }
     

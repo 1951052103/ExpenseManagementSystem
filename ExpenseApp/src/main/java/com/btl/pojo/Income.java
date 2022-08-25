@@ -5,6 +5,7 @@
 package com.btl.pojo;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -20,9 +21,12 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  *
@@ -48,7 +52,9 @@ public class Income implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Column(name = "amount")
-    private Long amount;
+    @Min(value=10000, message="{message.amount.minMsg}")
+    @Max(value=1000000000, message="{message.amount.maxMsg}")
+    private BigDecimal amount;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -62,6 +68,7 @@ public class Income implements Serializable {
     @NotNull
     @Column(name = "date")
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
     @Column(name = "approved")
     private Boolean approved;
@@ -95,11 +102,11 @@ public class Income implements Serializable {
         this.id = id;
     }
 
-    public Long getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Long amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

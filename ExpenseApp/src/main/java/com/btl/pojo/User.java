@@ -4,6 +4,7 @@
  */
 package com.btl.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -54,8 +55,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class User implements Serializable {
 
     public enum UserRole {
+        ADMIN,
         USER,
-        ADMIN
+        BUSINESS
     }
 
     private static final long serialVersionUID = 1L;
@@ -108,10 +110,13 @@ public class User implements Serializable {
     @Column(name = "role")
     private String role;
     @OneToMany(mappedBy = "userId")
+    @JsonIgnore
     private Set<Income> incomeSet;
     @OneToMany(mappedBy = "userId")
+    @JsonIgnore
     private Set<GroupUser> groupUserSet;
     @OneToMany(mappedBy = "userId")
+    @JsonIgnore
     private Set<Expense> expenseSet;
     @Transient
     private MultipartFile file;

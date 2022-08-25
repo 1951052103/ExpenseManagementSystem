@@ -40,7 +40,11 @@
                     <li class="nav-item">
                         <a class="nav-link text-info" href="<c:url value="/" />">
                             <%--<sec:authentication property="principal.username"/>--%>
-                            ${pageContext.session.getAttribute("currentUser").username}
+                            <c:if test="${currentUser.avatar != null}">
+                                <img src="${currentUser.avatar}" style="width:28px" class="img-fluid rounded-circle">
+                            </c:if>
+                            
+                            ${currentUser.username}
                         </a>
                     </li>
 

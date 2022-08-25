@@ -6,6 +6,8 @@ package com.btl.configs;
 
 import com.btl.handlers.LoginSuccessHandler;
 import com.btl.handlers.LogoutSuccessHandler;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -30,8 +32,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
     "com.btl.repository",
     "com.btl.service",
     "com.btl.handlers",
-    "com.btl.validator",
-})
+    "com.btl.validator",})
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -44,6 +45,17 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public Cloudinary cloudinary() {
+        Cloudinary cloudinary
+                = new Cloudinary(ObjectUtils.asMap(
+                        "cloud_name", "drnh9htgv",
+                        "api_key", "538624196835262",
+                        "api_secret", "du3wpYdHCGQn1nKjoIkjz85g3SY",
+                        "secure", true));
+        return cloudinary;
     }
 
     @Override
@@ -61,7 +73,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         http.exceptionHandling()
                 .accessDeniedPage("/login?accessDenied");
 
-        http.authorizeRequests().antMatchers("/").permitAll()
+        http.authorizeRequests().antMatchers("/").authenticated()
                 .antMatchers("/expense/**").authenticated()
                 .antMatchers("/income/**").authenticated();
 

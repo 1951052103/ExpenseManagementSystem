@@ -17,6 +17,36 @@
 
 <h1 class="text-center text-danger"><spring:message code="label.income" /></h1>
 
+<c:url value="/income" var="action" />
+<form:form method="post" action="${action}" modelAttribute="income">
+    <form:errors path="*" element="div" cssClass="alert alert-danger" />
+    
+    <div class="form-group">
+        <label for="amount"><spring:message code="amount" /> (<spring:message code="currency" />)</label>
+        <form:input type="number" id="amount" path="amount" class="form-control" required="required" />
+    </div>
+    <div class="form-group">
+        <label for="source"><spring:message code="income.source" /></label>
+        <form:input type="text" id="source" path="source" class="form-control" required="required" />
+    </div>
+    <div class="form-group">
+        <label for="date"><spring:message code="date" /></label>
+        <form:input type="date" id="date" path="date" class="form-control" value="${today}" required="required" />
+    </div>
+    <div class="form-group">
+        <label for="description">
+            <spring:message code="description" /> <spring:message code="label.optional" />
+        </label>
+        <form:textarea type="text" id="description" path="description" class="form-control" />
+    </div>
+        
+    <br/>
+    <div class="form-group">
+        <input type="submit" value="<spring:message code="button.add" />" class="btn btn-success" />
+    </div> 
+    <br/><br/>
+</form:form>
+
 <div>
     <div>
         <label for="page-size" class="form-label"><spring:message code="label.pagesize" /></label>
@@ -37,7 +67,6 @@
     </div>
 
     <div>
-        <c:url value="/income" var="action" />
         <form method="get" action="${action}" class="d-flex">
 
             <div class="mb-3 mt-3">
@@ -78,20 +107,23 @@
         <c:forEach items="${incomes}" var="i">
             <tr id="row${i.id}">
                 <td>
-                    <input type="number" class="form-control" value="${i.amount}"/>
+                    <input type="number" class="form-control" value="${i.amount}" id="amount-${i.id}"/>
                 </td>
                 <td>  
-                    <input type="text" class="form-control" value="${i.source}"/>
+                    <input type="text" class="form-control" value="${i.source}" id="source-${i.id}"/>
                 </td>
                 <td>
                     <fmt:formatDate pattern="yyyy-MM-dd" value="${i.date}" var="date"/>
-                    <input type="date" class="form-control" value="${date}" />
+                    <input type="date" class="form-control" value="${date}" id="date-${i.id}" />
                 </td>
                 <td>
-                    <textarea class="form-control">${i.description}</textarea>
+                    <textarea class="form-control" id="description-${i.id}">${i.description}</textarea>
                 </td>
                 <td>
-                    <input type="button" class="btn btn-primary" value="<spring:message code="button.update" />" />
+                    <div class="spinner-border text-info" style="display:none" id="updateLoad${i.id}"></div>
+                    <input type="button" 
+                           onclick="updateIncome('${url}/${i.id}', ${i.id}, this, '<spring:message code="message.update" />', '<spring:message code="message.amount.error" />')" 
+                           class="btn btn-primary" value="<spring:message code="button.update" />" />
                 </td>
                 <td>
                     <div class="spinner-border text-info" style="display:none" id="load${i.id}"></div>

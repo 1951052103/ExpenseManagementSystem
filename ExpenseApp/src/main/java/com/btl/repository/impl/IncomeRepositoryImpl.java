@@ -8,6 +8,7 @@ import com.btl.pojo.Income;
 import com.btl.pojo.User;
 import com.btl.repository.IncomeRepository;
 import com.btl.repository.UserRepository;
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -173,5 +174,89 @@ public class IncomeRepositoryImpl implements IncomeRepository{
             ex.printStackTrace();
             return false;
         }
+    }
+    
+    @Override
+    public BigDecimal getTotalIncome(Map<String, String> params) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<BigDecimal> q = b.createQuery(BigDecimal.class);
+        
+        Root root = q.from(Income.class);
+        q.select( b.sum(root.get("amount")) );
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        
+        List<Predicate> predicates = new ArrayList<>();
+        Predicate p1 = b.equal(root.get("userId").as(User.class), 
+                this.userRepository.getUserByUsername(currentPrincipalName));
+        predicates.add(p1);
+        
+        Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p2);
+
+        if (params != null && !params.isEmpty()) {
+            String fd = params.get("fromDate");
+            if (fd != null && !fd.isEmpty()) {
+                Predicate p = b.greaterThanOrEqualTo(root.get("date").as(Date.class),
+                        Date.valueOf(fd));
+                predicates.add(p);
+            }
+
+            String td = params.get("toDate");
+            if (td != null && !td.isEmpty()) {
+                Predicate p = b.lessThanOrEqualTo(root.get("date").as(Date.class),
+                        Date.valueOf(td));
+                predicates.add(p);
+            }
+        }
+        
+        q.where(predicates.toArray(new Predicate[]{}));
+        
+        Query query = session.createQuery(q);
+        
+        
+        return (BigDecimal) query.getSingleResult();
+    }
+    
+    @Override
+    public boolean addIncome(Income income) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        income.setUserId(userRepository.getUserByUsername(currentPrincipalName));
+        income.setActive(Boolean.TRUE);
+
+        try {
+            session.save(income);
+            return true;
+        } catch (Exception ex) {
+            session.clear();
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateIncome(Income income) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+
+        try {
+            session.update(income);
+            return true;
+        } catch (Exception ex) {
+            session.clear();
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public Income getIncomeById(int incomeId) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        return session.get(Income.class, incomeId);
     }
 }

@@ -21,8 +21,6 @@ import org.springframework.web.servlet.config.annotation.DefaultServletHandlerCo
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
 /**
  *
@@ -35,8 +33,7 @@ import org.springframework.web.servlet.view.JstlView;
     "com.btl.controllers",
     "com.btl.service",
     "com.btl.repository",
-    "com.btl.validator",
-})
+    "com.btl.validator",})
 public class WebAppContextConfig implements WebMvcConfigurer {
 
     @Override
@@ -69,7 +66,7 @@ public class WebAppContextConfig implements WebMvcConfigurer {
 
         return bean;
     }
-    
+
     @Bean(name = "beanValidator")
     public javax.validation.Validator beanValidator() {
         LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
