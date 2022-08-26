@@ -6,6 +6,7 @@ package com.btl.controllers;
 
 import com.btl.pojo.Expense;
 import com.btl.service.ExpenseService;
+import com.btl.service.GroupService;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +34,8 @@ public class ExpenseController {
     private Environment env;
     @Autowired
     private ExpenseService expenseService;
+    @Autowired
+    private GroupService groupService;
 
     @GetMapping("/expense")
     public String expense(Model model, @RequestParam Map<String, String> params) {
@@ -43,7 +46,7 @@ public class ExpenseController {
         
         model.addAttribute("expenses", this.expenseService.getExpenses(params, pageSize, page));
         model.addAttribute("expenseCounter", this.expenseService.countExpense(params));
-        
+                
         LocalDate today = LocalDate.now();
         String start = today.withDayOfMonth(1).toString();
         String end = today.withDayOfMonth(today.getMonth().length(today.isLeapYear())).toString();
@@ -55,6 +58,8 @@ public class ExpenseController {
         model.addAttribute("td", params.getOrDefault("toDate", end));
         
         model.addAttribute("today", today.toString());
+        
+        model.addAttribute("groups", this.groupService.getGroupsOfCurrentUser(null, page, page));
         
         return "expense";
     }

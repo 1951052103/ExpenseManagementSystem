@@ -44,8 +44,8 @@ public class GroupServiceImpl implements GroupService {
     }
     
     @Override
-    public List<CustomGroup> getGroups(Map<String, String> params, int pageSize, int page) {
-        return this.groupRepository.getGroups(params, page, page);
+    public List<CustomGroup> getGroupsOfCurrentUser(Map<String, String> params, int pageSize, int page) {
+        return this.groupRepository.getGroupsOfCurrentUser(params, page, page);
     }
     
     @Override

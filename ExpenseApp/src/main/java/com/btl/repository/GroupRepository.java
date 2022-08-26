@@ -18,6 +18,6 @@ public interface GroupRepository {
     CustomGroup getGroupById(int groupId);
     boolean joinGroup(CustomGroup group);
     int checkCurrentUserInGroup(int groupId);
-    List<CustomGroup> getGroups(Map<String, String> params, int pageSize, int page);
+    List<CustomGroup> getGroupsOfCurrentUser(Map<String, String> params, int pageSize, int page);
     List<User> getUsersInGroup(Map<String, String> params, int pageSize, int page);
 }

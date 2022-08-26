@@ -17,6 +17,7 @@
         <h1 class="text-success"class="text-center text-danger"><spring:message code="label.groupName" />: ${group.name}</h1>
     </div>
     
+    <h4><spring:message code="label.userList" /></h4>
     <table class="table">
         <tr>
             <th><spring:message code="label.username" /></th>
@@ -41,4 +42,7 @@
         </c:forEach>
 
     </table>
+            
+    <h4><spring:message code="label.expense" /></h4> 
+    <h4><spring:message code="label.income" /></h4>
 </div>

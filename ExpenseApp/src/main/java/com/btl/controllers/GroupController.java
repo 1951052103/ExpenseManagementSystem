@@ -35,7 +35,7 @@ public class GroupController {
         model.addAttribute("group", new CustomGroup());
         model.addAttribute("groupUser", new GroupUser());
         
-        model.addAttribute("groups", this.groupService.getGroups(params, 0, 0));
+        model.addAttribute("groups", this.groupService.getGroupsOfCurrentUser(params, 0, 0));
         
         model.addAttribute("kw", params.getOrDefault("kw", ""));
         
@@ -75,6 +75,9 @@ public class GroupController {
     public String groupDetails(@PathVariable(value = "groupId") int groupId,
             Model model, @RequestParam Map<String, String> params) {
         model.addAttribute("group", this.groupService.getGroupById(groupId));
+        
+        params.put("groupId", String.valueOf(groupId));
+        
         model.addAttribute("users", this.groupService.getUsersInGroup(params,0,0));
         
         return "group-details";

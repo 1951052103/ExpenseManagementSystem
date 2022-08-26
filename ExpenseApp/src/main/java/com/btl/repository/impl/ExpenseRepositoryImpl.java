@@ -63,6 +63,9 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
         predicates.add(p2);
 
+        Predicate p5 = b.equal(root.get("approved").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p5);
+
         if (params != null && !params.isEmpty()) {
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
@@ -132,6 +135,9 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
         predicates.add(p2);
 
+        Predicate p5 = b.equal(root.get("approved").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p5);
+
         if (params != null) {
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
@@ -197,6 +203,9 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
         predicates.add(p2);
 
+        Predicate p5 = b.equal(root.get("approved").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p5);
+
         if (params != null && !params.isEmpty()) {
             String fd = params.get("fromDate");
             if (fd != null && !fd.isEmpty()) {
@@ -231,6 +240,13 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         expense.setActive(Boolean.TRUE);
 
         try {
+            if (expense.getGroupId() == null || expense.getGroupId().getId() <= 0) {
+                expense.setGroupId(null);
+                expense.setApproved(Boolean.TRUE);
+            } else {
+                expense.setApproved(Boolean.FALSE);
+            }
+
             session.save(expense);
             return true;
         } catch (Exception ex) {
@@ -245,6 +261,10 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         Session session = this.sessionFactory.getObject().getCurrentSession();
 
         try {
+            if(expense.getGroupId() != null && expense.getGroupId().getId() > 0) {
+                return false;
+            }
+            
             session.update(expense);
             return true;
         } catch (Exception ex) {

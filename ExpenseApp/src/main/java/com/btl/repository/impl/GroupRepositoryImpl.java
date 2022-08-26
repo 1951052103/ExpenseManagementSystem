@@ -128,7 +128,7 @@ public class GroupRepositoryImpl implements GroupRepository {
     }
 
     @Override
-    public List<CustomGroup> getGroups(Map<String, String> params, int pageSize, int page) {
+    public List<CustomGroup> getGroupsOfCurrentUser(Map<String, String> params, int pageSize, int page) {
         Session session = this.sessionFactory.getObject().getCurrentSession();
         CriteriaBuilder b = session.getCriteriaBuilder();
         CriteriaQuery<Object[]> q = b.createQuery(Object[].class);
@@ -178,24 +178,35 @@ public class GroupRepositoryImpl implements GroupRepository {
         CriteriaBuilder b = session.getCriteriaBuilder();
         CriteriaQuery<User> q = b.createQuery(User.class);
         
-        Root root = q.from(User.class);
-        q.select(root);
+        Root rootGroupUser = q.from(GroupUser.class);
+        Root rootUser = q.from(User.class);
+        q.select(rootUser);
         
         List<Predicate> predicates = new ArrayList<>();
-        Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
+        Predicate p1 = b.equal(rootUser.get("active").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p1);
+        
+        Predicate p2 = b.equal(rootGroupUser.get("active").as(Boolean.class), Boolean.TRUE);
         predicates.add(p2);
+        
+        Predicate p5 = b.equal(rootUser.get("id"), rootGroupUser.get("userId"));
+        predicates.add(p5);
+        
+        Predicate p6 = b.equal(rootGroupUser.get("groupId"),
+                this.getGroupById(Integer.parseInt(params.get("groupId"))));
+        predicates.add(p6);
         
         if (params != null && !params.isEmpty()) {
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
-                Predicate p = b.like(root.get("username").as(String.class),
+                Predicate p = b.like(rootUser.get("username").as(String.class),
                         String.format("%%%s%%", kw));
                 predicates.add(p);
             }
         }
         
         q.where(predicates.toArray(new Predicate[]{}));
-        q.orderBy(b.desc(root.get("id")));
+        q.orderBy(b.desc(rootUser.get("id")));
         
         Query query = session.createQuery(q);
         

@@ -5,6 +5,7 @@
 package com.btl.controllers;
 
 import com.btl.pojo.Income;
+import com.btl.service.GroupService;
 import com.btl.service.IncomeService;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -30,6 +31,8 @@ public class IncomeController {
     private Environment env;
     @Autowired
     private IncomeService incomeService;
+    @Autowired
+    private GroupService groupService;
     
     @GetMapping("/income")
     private String income(Model model, @RequestParam Map<String, String> params) {
@@ -52,6 +55,8 @@ public class IncomeController {
         model.addAttribute("td", params.getOrDefault("toDate", end));
         
         model.addAttribute("today", today.toString());
+        
+        model.addAttribute("groups", this.groupService.getGroupsOfCurrentUser(null, page, page));
         
         return "income";
     }

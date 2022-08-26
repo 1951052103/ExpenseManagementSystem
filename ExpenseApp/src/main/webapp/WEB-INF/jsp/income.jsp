@@ -39,6 +39,20 @@
         </label>
         <form:textarea type="text" id="description" path="description" class="form-control" />
     </div>
+    
+    <div class="form-group">
+        <label for="group"><spring:message code="label.group" /> <spring:message code="label.optional" /></label>
+        <form:select id="group" path="groupId.id" class="form-control">
+            <form:option value="${0}">
+                <spring:message code="label.none" />
+            </form:option>
+            <c:forEach items="${groups}" var="g">
+                <form:option value="${g[0]}">
+                    <spring:message code="label.groupId" />: ${g[0]} - <spring:message code="label.groupName" />: ${g[1]}
+                </form:option>
+            </c:forEach>
+        </form:select>
+    </div>
         
     <br/>
     <div class="form-group">
@@ -100,6 +114,7 @@
             <th><spring:message code="income.source" /></th>
             <th><spring:message code="date" /></th>
             <th><spring:message code="description" /></th>
+            <th><spring:message code="label.group" /></th>
             <th></th>
             <th></th>
         </tr>
@@ -119,6 +134,10 @@
                 <td>
                     <textarea class="form-control" id="description-${i.id}">${i.description}</textarea>
                 </td>
+                <td>
+                    <input type="text" class="form-control" value="${i.groupId.name}" id="group-${i.id}" disabled />
+                </td>
+                
                 <td>
                     <div class="spinner-border text-info" style="display:none" id="updateLoad${i.id}"></div>
                     <input type="button" 

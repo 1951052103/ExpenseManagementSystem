@@ -20,7 +20,7 @@
 <c:url value="/expense" var="action" />
 <form:form method="post" action="${action}" modelAttribute="expense">
     <form:errors path="*" element="div" cssClass="alert alert-danger" />
-    
+
     <div class="form-group">
         <label for="amount"><spring:message code="amount" /> (<spring:message code="currency" />)</label>
         <form:input type="number" id="amount" path="amount" class="form-control" required="required" />
@@ -39,7 +39,21 @@
         </label>
         <form:textarea type="text" id="description" path="description" class="form-control" />
     </div>
-        
+
+    <div class="form-group">
+        <label for="group"><spring:message code="label.group" /> <spring:message code="label.optional" /></label>
+        <form:select id="group" path="groupId.id" class="form-control">
+            <form:option value="${0}">
+                <spring:message code="label.none" />
+            </form:option>
+            <c:forEach items="${groups}" var="g">
+                <form:option value="${g[0]}">
+                    <spring:message code="label.groupId" />: ${g[0]} - <spring:message code="label.groupName" />: ${g[1]}
+                </form:option>
+            </c:forEach>
+        </form:select>
+    </div>
+
     <br/>
     <div class="form-group">
         <input type="submit" value="<spring:message code="button.add" />" class="btn btn-success" />
@@ -100,6 +114,7 @@
             <th><spring:message code="expense.purpose" /></th>
             <th><spring:message code="date" /></th>
             <th><spring:message code="description" /></th>
+            <th><spring:message code="label.group" /></th>
             <th></th>
             <th></th>
         </tr>
@@ -118,6 +133,9 @@
                 </td>
                 <td>
                     <textarea class="form-control" id="description-${e.id}">${e.description}</textarea>
+                </td>
+                <td>
+                    <input type="text" class="form-control" value="${e.groupId.name}" id="group-${e.id}" disabled />
                 </td>
                 
                 <td>
@@ -150,11 +168,11 @@
                 <c:choose>
                     <c:when test="${page == i}">
                         <li class="page-item"><a class="page-link bg-primary text-light" href="${u}">${i}</a></li>  
-                    </c:when>
-                    <c:otherwise>
+                        </c:when>
+                        <c:otherwise>
                         <li class="page-item"><a class="page-link" href="${u}">${i}</a></li>   
-                    </c:otherwise>
-                </c:choose>
+                        </c:otherwise>
+                    </c:choose>
 
             </c:forEach>
         </ul>

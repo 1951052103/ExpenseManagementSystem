@@ -31,7 +31,7 @@ CREATE TABLE `custom_group` (
 	PRIMARY KEY (`id`)
 );
 
-INSERT INTO `custom_group`(`name`) VALUES ('traveling');
+INSERT INTO `custom_group`(`name`) VALUES ('none'),  ('Traveling');
 
 CREATE TABLE `group_user` (
 	`id` int NOT NULL AUTO_INCREMENT,
@@ -44,7 +44,7 @@ CREATE TABLE `group_user` (
     FOREIGN KEY (`group_id`) REFERENCES `custom_group` (`id`) ON DELETE SET NULL
 );
 
-INSERT INTO `group_user`(`user_id`, `group_id`, `is_leader`) VALUES (1, 1, 1), (2, 1, 0);
+INSERT INTO `group_user`(`group_id`, `user_id`, `is_leader`) VALUES (2, 1, 1), (2, 2, 0);
 
 CREATE TABLE `expense` (
 	`id` int NOT NULL AUTO_INCREMENT,
@@ -61,19 +61,19 @@ CREATE TABLE `expense` (
     FOREIGN KEY (`group_id`) REFERENCES `custom_group` (`id`) ON DELETE SET NULL
 );
 
-INSERT INTO `expense`(`user_id`, `group_id`, `amount`, `purpose`) 
-VALUES (1, NULL, 100000, 'food'),
-(1, NULL, 100000, 'food'),
-(1, NULL, 100000, 'food'),
-(1, NULL, 100000, 'food'),
-(1, NULL, 100000, 'food'),
-(1, NULL, 100000, 'food'),
-(1, NULL, 100000, 'food'),
-(1, NULL, 100000, 'food'),
-(1, NULL, 100000, 'food'),
-(1, NULL, 100000, 'food'),
-(1, NULL, 100000, 'food'),
-(1, NULL, 100000, 'food');
+INSERT INTO `expense`(`user_id`, `amount`, `purpose`, `group_id`) 
+VALUES (1, 100000, 'food', 1),
+(1, 100000, 'food', 1),
+(1, 100000, 'food', 1),
+(1, 100000, 'food', 1),
+(1, 100000, 'food', 1),
+(1, 100000, 'food', 1),
+(1, 100000, 'food', 1),
+(1, 100000, 'food', 1),
+(1, 100000, 'food', 1),
+(1, 100000, 'food', 1),
+(1, 100000, 'food', 1),
+(1, 100000, 'food', 1);
 
 CREATE TABLE `income` (
 	`id` int NOT NULL AUTO_INCREMENT,
@@ -90,16 +90,17 @@ CREATE TABLE `income` (
     FOREIGN KEY (`group_id`) REFERENCES `custom_group` (`id`) ON DELETE SET NULL
 );
 
-INSERT INTO `income`(`user_id`, `group_id`, `amount`, `source`) VALUES (1, NULL, 30000000, 'salary'),
-(1, NULL, 30000000, 'salary'),
-(1, NULL, 30000000, 'salary'),
-(1, NULL, 30000000, 'salary'),
-(1, NULL, 30000000, 'salary'),
-(1, NULL, 30000000, 'salary'),
-(1, NULL, 30000000, 'salary'),
-(1, NULL, 30000000, 'salary'),
-(1, NULL, 30000000, 'salary'),
-(1, NULL, 30000000, 'salary'),
-(1, NULL, 30000000, 'salary'),
-(1, NULL, 30000000, 'salary'),
-(1, NULL, 30000000, 'salary');
+INSERT INTO `income`(`user_id`, `amount`, `source`, `group_id`) 
+VALUES (1, 30000000, 'salary', 1),
+(1, 30000000, 'salary', 1),
+(1, 30000000, 'salary', 1),
+(1, 30000000, 'salary', 1),
+(1, 30000000, 'salary', 1),
+(1, 30000000, 'salary', 1),
+(1, 30000000, 'salary', 1),
+(1, 30000000, 'salary', 1),
+(1, 30000000, 'salary', 1),
+(1, 30000000, 'salary', 1),
+(1, 30000000, 'salary', 1),
+(1, 30000000, 'salary', 1),
+(1, 30000000, 'salary', 1);
