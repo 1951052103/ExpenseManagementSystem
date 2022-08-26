@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -31,10 +32,18 @@ public class IndexController {
     private IncomeService incomeService;
     @Autowired
     private ExpenseService expenseService;
+    @Autowired
+    private Environment env;
 
     @ModelAttribute
     public void commonAttributes(Model model, HttpSession session) {
         model.addAttribute("currentUser", session.getAttribute("currentUser"));
+
+        Map<String, Integer> sizes = new HashMap<>();
+        sizes.put(env.getProperty("page.key.10"), Integer.parseInt(env.getProperty("page.value.10")));
+        sizes.put(env.getProperty("page.key.20"), Integer.parseInt(env.getProperty("page.value.20")));
+        sizes.put(env.getProperty("page.key.all"), Integer.parseInt(env.getProperty("page.value.all")));
+        model.addAttribute("sizes", sizes);
     }
 
     @RequestMapping("/")
@@ -57,23 +66,23 @@ public class IndexController {
         //last month
         start = today.minusMonths(1).withDayOfMonth(1).toString();
         end = today.minusMonths(1).withDayOfMonth(today.getMonth().length(today.isLeapYear())).toString();
-        
+
         myParams.put("fromDate", start);
         myParams.put("toDate", end);
         model.addAttribute("lmfd", start);
         model.addAttribute("lmtd", end);
-        
+
         model.addAttribute("lastMonthExpense", getExpense(myParams));
-        
+
         //last year
         start = today.minusYears(1).withDayOfMonth(1).toString();
         end = today.minusYears(1).withDayOfMonth(today.getMonth().length(today.isLeapYear())).toString();
-        
+
         myParams.put("fromDate", start);
         myParams.put("toDate", end);
         model.addAttribute("lyfd", start);
         model.addAttribute("lytd", end);
-        
+
         model.addAttribute("lastYearExpense", getExpense(myParams));
 
         return "index";

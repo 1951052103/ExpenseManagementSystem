@@ -21,8 +21,8 @@ CREATE TABLE `user` (
 );
 
 INSERT INTO `user`(`username`, `password` ,`first_name`, `gender`, `role`) 
-VALUES ('admin', '$2a$10$5X9k5N1sTc1/CjVH5XJoje3QMYijH3ETpgkox00R0MdPaJPPrf7wO', 'admin', 1, 'ADMIN'),
-('user', '$2a$10$5X9k5N1sTc1/CjVH5XJoje3QMYijH3ETpgkox00R0MdPaJPPrf7wO', 'user', 1, 'USER');
+VALUES ('admin', '$2a$10$IMc.iLFc2GlER.1nZT2or.IKqqnSB76N6Y5YRMHtYABYWrnPnExIK', 'admin', 1, 'ADMIN'),
+('user', '$2a$10$IMc.iLFc2GlER.1nZT2or.IKqqnSB76N6Y5YRMHtYABYWrnPnExIK', 'user', 1, 'USER');
 
 CREATE TABLE `custom_group` (
 	`id` int NOT NULL AUTO_INCREMENT,
@@ -35,8 +35,8 @@ INSERT INTO `custom_group`(`name`) VALUES ('traveling');
 
 CREATE TABLE `group_user` (
 	`id` int NOT NULL AUTO_INCREMENT,
-	`user_id` int DEFAULT NULL,
     `group_id` int DEFAULT NULL,
+	`user_id` int DEFAULT NULL,
     `is_leader` bit(1) DEFAULT b'0',
     `active` bit(1) DEFAULT b'1',
 	PRIMARY KEY (`id`),

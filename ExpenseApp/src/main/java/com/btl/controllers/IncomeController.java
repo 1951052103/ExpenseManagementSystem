@@ -41,12 +41,6 @@ public class IncomeController {
         model.addAttribute("incomes", this.incomeService.getIncomes(params, pageSize, page));
         model.addAttribute("IncomeCounter", this.incomeService.countIncome(params));
         
-        Map<String, Integer> sizes = new HashMap<>();
-        sizes.put(env.getProperty("page.key.10"), Integer.parseInt(env.getProperty("page.value.10")));
-        sizes.put(env.getProperty("page.key.20"), Integer.parseInt(env.getProperty("page.value.20")));
-        sizes.put(env.getProperty("page.key.all"), Integer.parseInt(env.getProperty("page.value.all")));
-        model.addAttribute("sizes", sizes);
-        
         LocalDate today = LocalDate.now();
         String start = today.withDayOfMonth(1).toString();
         String end = today.withDayOfMonth(today.getMonth().length(today.isLeapYear())).toString();

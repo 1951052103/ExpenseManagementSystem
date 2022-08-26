@@ -27,7 +27,15 @@
                 <li class="nav-item">
                     <a class="nav-link" href="<c:url value="/income" />"><spring:message code="label.income" /></a>
                 </li>
-
+                <li class="nav-item">
+                    <a class="nav-link" href="<c:url value="/group" />"><spring:message code="label.group" /></a>
+                </li>
+                
+                <sec:authorize access="hasAuthority('ADMIN')">
+                    <li class="nav-item">
+                        <a class="nav-link" href="<c:url value="/admin/users" />"><spring:message code="label.admin" /></a>
+                    </li>
+                </sec:authorize>
                 <sec:authorize access="!isAuthenticated()">
                     <li class="nav-item">
                         <a class="nav-link text-info" href="<c:url value="/login" />"><spring:message code="header.login" /></a>
@@ -43,7 +51,7 @@
                             <c:if test="${currentUser.avatar != null}">
                                 <img src="${currentUser.avatar}" style="width:28px" class="img-fluid rounded-circle">
                             </c:if>
-                            
+
                             ${currentUser.username}
                         </a>
                     </li>

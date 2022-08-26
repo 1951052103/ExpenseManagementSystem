@@ -11,5 +11,6 @@ function setPageSize(event) {
     else {
         url.searchParams.set('pageSize', event.target.value); 
     }
+    url.searchParams.set('page', 1); 
     window.location.href = url;
 }

@@ -6,8 +6,17 @@ package com.btl.repository.impl;
 
 import com.btl.pojo.User;
 import com.btl.repository.UserRepository;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -15,6 +24,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  *
@@ -25,6 +35,10 @@ import org.hibernate.query.Query;
 public class UserRepositoryImpl implements UserRepository {
     @Autowired
     private LocalSessionFactoryBean sessionFactory;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private Cloudinary cloudinary;
     
     @Override
     public User getUserByUsername(String username) {
@@ -34,8 +48,14 @@ public class UserRepositoryImpl implements UserRepository {
         
         Root root = q.from(User.class);
         q.select(root);
+        
+        List<Predicate> predicates = new ArrayList<>();
+        Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p2);
 
-        q.where( b.equal(root.get("username"), username) );
+        Predicate p3 = b.equal(root.get("username"), username);
+        predicates.add(p3);
+        q.where( predicates.toArray(new Predicate[]{}) );
 
         Query query = session.createQuery(q);
 
@@ -62,6 +82,20 @@ public class UserRepositoryImpl implements UserRepository {
         Session session = this.sessionFactory.getObject().getCurrentSession();
 
         try {
+            if (user.getRole().equals(User.UserRole.ADMIN.toString())) {
+                throw new IOException();
+            }
+            
+            user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword()));
+            user.setActive(Boolean.TRUE);
+            user.setRegistrationDate(Date.valueOf(LocalDate.now()));
+            
+            if (user.getFile().getSize() > 0) {
+                Map m = this.cloudinary.uploader().upload(user.getFile().getBytes(),
+                        ObjectUtils.asMap("resource_type", "auto"));
+                user.setAvatar(m.get("secure_url").toString());
+            }
+            
             session.save(user);
             return true;
         } 
@@ -70,5 +104,70 @@ public class UserRepositoryImpl implements UserRepository {
             ex.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public List<User> getUsers(Map<String, String> params, int pageSize, int page) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<User> q = b.createQuery(User.class);
+        
+        Root root = q.from(User.class);
+        q.select(root);
+        
+        List<Predicate> predicates = new ArrayList<>();
+        Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p2);
+        
+        if (params != null && !params.isEmpty()) {
+            String kw = params.get("kw");
+            if (kw != null && !kw.isEmpty()) {
+                Predicate p = b.like(root.get("username").as(String.class),
+                        String.format("%%%s%%", kw));
+                predicates.add(p);
+            }
+        }
+        
+        q.where(predicates.toArray(new Predicate[]{}));
+        q.orderBy(b.desc(root.get("id")));
+        
+        Query query = session.createQuery(q);
+        
+        if (pageSize > 0) {
+            int start = (page - 1) * pageSize;
+            query.setFirstResult(start);
+            query.setMaxResults(pageSize);
+        }
+        
+        return query.getResultList();
+    }
+
+    @Override
+    public int countUser(Map<String, String> params) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<Long> q = b.createQuery(Long.class);
+        
+        Root root = q.from(User.class);
+        q.select(b.count(root.get("id")));
+        
+        List<Predicate> predicates = new ArrayList<>();
+        Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p2);
+        
+        if (params != null && !params.isEmpty()) {
+            String kw = params.get("kw");
+            if (kw != null && !kw.isEmpty()) {
+                Predicate p = b.like(root.get("username").as(String.class),
+                        String.format("%%%s%%", kw));
+                predicates.add(p);
+            }
+        }
+        
+        q.where(predicates.toArray(new Predicate[]{}));
+        
+        Query query = session.createQuery(q);
+        
+        return Integer.parseInt(query.getSingleResult().toString());
     }
 }
