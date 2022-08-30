@@ -35,9 +35,12 @@ public class ApiExpenseController {
     private ExpenseService expenseService;
 
     @DeleteMapping("/expense/{expenseId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable(value = "expenseId") int id) {
-        this.expenseService.deleteExpense(id);
+    public ResponseEntity<?> delete(@PathVariable(value = "expenseId") int id) {
+        if (this.expenseService.deleteExpense(id)) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
     @PostMapping(path = "/expense/{expenseId}", produces = {
@@ -54,9 +57,22 @@ public class ApiExpenseController {
         expense.setDate(Date.valueOf(params.get("date")));
         expense.setDescription(params.get("description"));
 
-        this.expenseService.updateExpense(expense);
+        if (params.get("approved").equals("true")) {
+            expense.setApproved(true);
+        } else {
+            expense.setApproved(false);
+        }
 
-        return new ResponseEntity<>(expense, HttpStatus.CREATED);
+        if (params.get("confirmed").equals("true")) {
+            expense.setConfirmed(true);
+        } else {
+            expense.setConfirmed(false);
+        }
 
+        if (this.expenseService.updateExpense(expense)) {
+            return new ResponseEntity<>(expense, HttpStatus.CREATED);
+        }
+
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 }

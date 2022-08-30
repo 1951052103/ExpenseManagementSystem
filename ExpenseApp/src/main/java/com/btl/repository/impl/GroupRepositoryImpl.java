@@ -77,7 +77,7 @@ public class GroupRepositoryImpl implements GroupRepository {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
-        if(this.checkCurrentUserInGroup(group.getId()) <=0 ) {
+        if( Integer.parseInt(this.checkCurrentUserInGroup(group.getId()).get(0)[0].toString()) <= 0 ) {
             GroupUser groupUser = new GroupUser();
             groupUser.setGroupId(group);
             groupUser.setUserId(this.userRepository.getUserByUsername(currentPrincipalName));
@@ -97,13 +97,13 @@ public class GroupRepositoryImpl implements GroupRepository {
     }
 
     @Override
-    public int checkCurrentUserInGroup(int groupId) {
+    public List<Object[]> checkCurrentUserInGroup(int groupId) {
         Session session = this.sessionFactory.getObject().getCurrentSession();
         CriteriaBuilder b = session.getCriteriaBuilder();
-        CriteriaQuery<Long> q = b.createQuery(Long.class);
+        CriteriaQuery<Object[]> q = b.createQuery(Object[].class);
 
         Root root = q.from(GroupUser.class);
-        q.select(b.count(root.get("id")));
+        q.multiselect( b.count( root.get("id") ), root.get("isLeader"));
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
@@ -124,7 +124,7 @@ public class GroupRepositoryImpl implements GroupRepository {
 
         Query query = session.createQuery(q);
 
-        return Integer.parseInt(query.getSingleResult().toString());
+        return query.getResultList();
     }
 
     @Override

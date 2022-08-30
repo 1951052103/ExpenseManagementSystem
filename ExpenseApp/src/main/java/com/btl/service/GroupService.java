@@ -17,7 +17,7 @@ public interface GroupService {
     boolean addGroup(CustomGroup group);
     CustomGroup getGroupById(int groupId);
     boolean joinGroup(CustomGroup group);
-    int checkCurrentUserInGroup(int groupId);
+    List<Object[]> checkCurrentUserInGroup(int groupId);
     List<CustomGroup> getGroupsOfCurrentUser(Map<String, String> params, int pageSize, int page);
     List<User> getUsersInGroup(Map<String, String> params, int pageSize, int page);
 }

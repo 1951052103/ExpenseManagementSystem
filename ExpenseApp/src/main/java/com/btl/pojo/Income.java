@@ -52,8 +52,8 @@ public class Income implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Column(name = "amount")
-    @Min(value=10000, message="{message.amount.minMsg}")
-    @Max(value=1000000000, message="{message.amount.maxMsg}")
+    @Min(value = 10000, message = "{message.amount.minMsg}")
+    @Max(value = 1000000000, message = "{message.amount.maxMsg}")
     private BigDecimal amount;
     @Basic(optional = false)
     @NotNull
@@ -72,6 +72,8 @@ public class Income implements Serializable {
     private Date date;
     @Column(name = "approved")
     private Boolean approved;
+    @Column(name = "confirmed")
+    private Boolean confirmed;
     @Column(name = "active")
     private Boolean active;
     @JoinColumn(name = "group_id", referencedColumnName = "id")
@@ -142,6 +144,14 @@ public class Income implements Serializable {
         this.approved = approved;
     }
 
+    public Boolean getConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(Boolean confirmed) {
+        this.confirmed = confirmed;
+    }
+
     public Boolean getActive() {
         return active;
     }
@@ -190,5 +200,5 @@ public class Income implements Serializable {
     public String toString() {
         return "com.btl.pojo.Income[ id=" + id + " ]";
     }
-    
+
 }

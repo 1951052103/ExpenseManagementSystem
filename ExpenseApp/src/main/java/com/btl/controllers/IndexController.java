@@ -4,8 +4,10 @@
  */
 package com.btl.controllers;
 
+import com.btl.pojo.User;
 import com.btl.service.ExpenseService;
 import com.btl.service.IncomeService;
+import com.btl.service.UserService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -47,7 +50,7 @@ public class IndexController {
     }
 
     @RequestMapping("/")
-    public String index(Model model, @RequestParam Map<String, String> params) {
+    public String index(Model model, @RequestParam Map<String, String> params) {       
         Map<String, String> myParams = new HashMap<>();
 
         //current month

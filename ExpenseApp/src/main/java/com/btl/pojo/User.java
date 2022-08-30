@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -115,7 +116,7 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "userId")
     @JsonIgnore
     private Set<GroupUser> groupUserSet;
-    @OneToMany(mappedBy = "userId")
+    @OneToMany(mappedBy = "userId", fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<Expense> expenseSet;
     @Transient

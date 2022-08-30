@@ -4,8 +4,10 @@
  */
 package com.btl.repository.impl;
 
+import com.btl.pojo.CustomGroup;
 import com.btl.pojo.Income;
 import com.btl.pojo.User;
+import com.btl.repository.GroupRepository;
 import com.btl.repository.IncomeRepository;
 import com.btl.repository.UserRepository;
 import java.math.BigDecimal;
@@ -39,6 +41,8 @@ public class IncomeRepositoryImpl implements IncomeRepository {
     private LocalSessionFactoryBean sessionFactory;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private GroupRepository groupRepository;
 
     @Override
     public List<Income> getIncomes(Map<String, String> params, int pageSize, int page) {
@@ -53,17 +57,24 @@ public class IncomeRepositoryImpl implements IncomeRepository {
         String currentPrincipalName = authentication.getName();
 
         List<Predicate> predicates = new ArrayList<>();
-        Predicate p1 = b.equal(root.get("userId").as(User.class),
-                this.userRepository.getUserByUsername(currentPrincipalName));
-        predicates.add(p1);
 
         Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
         predicates.add(p2);
-        
-        Predicate p5 = b.equal(root.get("approved").as(Boolean.class), Boolean.TRUE);
-        predicates.add(p5);
 
         if (params != null && !params.isEmpty()) {
+            //////////////////
+            String groupId = params.get("groupId");
+            if (groupId != null && !groupId.isEmpty()) {
+                Predicate p = b.equal(root.get("groupId").as(CustomGroup.class),
+                        groupRepository.getGroupById(Integer.parseInt(groupId)));
+                predicates.add(p);
+            }
+            else {             
+                Predicate p1 = b.equal(root.get("userId").as(User.class),
+                        this.userRepository.getUserByUsername(currentPrincipalName));
+                predicates.add(p1);
+            }
+            
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
                 Predicate p = b.like(root.get("source").as(String.class),
@@ -85,6 +96,10 @@ public class IncomeRepositoryImpl implements IncomeRepository {
                 predicates.add(p);
             }
         } else {
+            Predicate p1 = b.equal(root.get("userId").as(User.class),
+                        this.userRepository.getUserByUsername(currentPrincipalName));
+            predicates.add(p1);
+            
             LocalDate today = LocalDate.now();
             LocalDate start = today.withDayOfMonth(1);
             LocalDate end = today.withDayOfMonth(today.getMonth().length(today.isLeapYear()));
@@ -125,17 +140,24 @@ public class IncomeRepositoryImpl implements IncomeRepository {
         String currentPrincipalName = authentication.getName();
 
         List<Predicate> predicates = new ArrayList<>();
-        Predicate p1 = b.equal(root.get("userId").as(User.class),
-                this.userRepository.getUserByUsername(currentPrincipalName));
-        predicates.add(p1);
 
         Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
         predicates.add(p2);
 
-        Predicate p5 = b.equal(root.get("approved").as(Boolean.class), Boolean.TRUE);
-        predicates.add(p5);
-
         if (params != null) {
+            //////////////////
+            String groupId = params.get("groupId");
+            if (groupId != null && !groupId.isEmpty()) {
+                Predicate p = b.equal(root.get("groupId").as(CustomGroup.class),
+                        groupRepository.getGroupById(Integer.parseInt(groupId)));
+                predicates.add(p);
+            }
+            else {             
+                Predicate p1 = b.equal(root.get("userId").as(User.class),
+                        this.userRepository.getUserByUsername(currentPrincipalName));
+                predicates.add(p1);
+            }
+            
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
                 Predicate p = b.like(root.get("source").as(String.class),
@@ -157,6 +179,10 @@ public class IncomeRepositoryImpl implements IncomeRepository {
                 predicates.add(p);
             }
         } else {
+            Predicate p1 = b.equal(root.get("userId").as(User.class),
+                        this.userRepository.getUserByUsername(currentPrincipalName));
+            predicates.add(p1);
+            
             LocalDate today = LocalDate.now();
             LocalDate start = today.withDayOfMonth(1);
             LocalDate end = today.withDayOfMonth(today.getMonth().length(today.isLeapYear()));
@@ -175,21 +201,6 @@ public class IncomeRepositoryImpl implements IncomeRepository {
         Query query = session.createQuery(q);
 
         return Integer.parseInt(query.getSingleResult().toString());
-    }
-
-    @Override
-    public boolean deleteIncome(int id) {
-        Session session = this.sessionFactory.getObject().getCurrentSession();
-
-        try {
-            Income in = session.get(Income.class, id);
-            session.delete(in);
-
-            return true;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
     }
 
     @Override
@@ -214,6 +225,9 @@ public class IncomeRepositoryImpl implements IncomeRepository {
 
         Predicate p5 = b.equal(root.get("approved").as(Boolean.class), Boolean.TRUE);
         predicates.add(p5);
+        
+        Predicate p6 = b.equal(root.get("confirmed").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p6);
 
         if (params != null && !params.isEmpty()) {
             String fd = params.get("fromDate");
@@ -252,8 +266,10 @@ public class IncomeRepositoryImpl implements IncomeRepository {
             if (income.getGroupId() == null || income.getGroupId().getId() <= 0) {
                 income.setGroupId(null);
                 income.setApproved(Boolean.TRUE);
+                income.setConfirmed(Boolean.TRUE);
             } else {
                 income.setApproved(Boolean.FALSE);
+                income.setConfirmed(Boolean.FALSE);
             }
 
             session.save(income);
@@ -270,14 +286,36 @@ public class IncomeRepositoryImpl implements IncomeRepository {
         Session session = this.sessionFactory.getObject().getCurrentSession();
 
         try {
-            if(income.getGroupId() != null && income.getGroupId().getId() > 0) {
+            if(income.getGroupId() != null &&
+                    groupRepository.checkCurrentUserInGroup( income.getGroupId().getId() ).get(0)[1].equals(false) ) {
                 return false;
             }
             
+            session.clear();
             session.update(income);
             return true;
         } catch (Exception ex) {
             session.clear();
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean deleteIncome(int id) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+
+        try {
+            Income income = session.get(Income.class, id);
+            
+            if(income.getGroupId() != null &&
+                    groupRepository.checkCurrentUserInGroup( income.getGroupId().getId() ).get(0)[1].equals(false) ) {
+                return false;
+            }
+            
+            session.delete(income);
+            return true;
+        } catch (Exception ex) {
             ex.printStackTrace();
             return false;
         }

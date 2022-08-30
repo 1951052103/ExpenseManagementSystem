@@ -72,6 +72,8 @@ public class Expense implements Serializable {
     private Date date;
     @Column(name = "approved")
     private Boolean approved;
+    @Column(name = "confirmed")
+    private Boolean confirmed;
     @Column(name = "active")
     private Boolean active;
     @JoinColumn(name = "group_id", referencedColumnName = "id")
@@ -140,6 +142,14 @@ public class Expense implements Serializable {
 
     public void setApproved(Boolean approved) {
         this.approved = approved;
+    }
+
+    public Boolean getConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(Boolean confirmed) {
+        this.confirmed = confirmed;
     }
 
     public Boolean getActive() {

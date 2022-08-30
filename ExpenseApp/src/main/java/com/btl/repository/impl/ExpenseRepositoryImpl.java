@@ -4,10 +4,12 @@
  */
 package com.btl.repository.impl;
 
+import com.btl.pojo.CustomGroup;
 import com.btl.pojo.Expense;
 import com.btl.pojo.User;
 import com.btl.repository.ExpenseRepository;
 import com.btl.repository.UserRepository;
+import com.btl.repository.GroupRepository;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -42,6 +44,8 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
     private LocalSessionFactoryBean sessionFactory;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private GroupRepository groupRepository;
 
     @Override
     public List<Expense> getExpenses(Map<String, String> params, int pageSize, int page) {
@@ -56,17 +60,24 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         String currentPrincipalName = authentication.getName();
 
         List<Predicate> predicates = new ArrayList<>();
-        Predicate p1 = b.equal(root.get("userId").as(User.class),
-                this.userRepository.getUserByUsername(currentPrincipalName));
-        predicates.add(p1);
 
         Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
         predicates.add(p2);
 
-        Predicate p5 = b.equal(root.get("approved").as(Boolean.class), Boolean.TRUE);
-        predicates.add(p5);
-
         if (params != null && !params.isEmpty()) {
+            ///////////////////////////////
+            String groupId = params.get("groupId");
+            if (groupId != null && !groupId.isEmpty()) {
+                Predicate p = b.equal(root.get("groupId").as(CustomGroup.class),
+                        this.groupRepository.getGroupById(Integer.parseInt(groupId)));
+                predicates.add(p);
+            }
+            else {             
+                Predicate p1 = b.equal(root.get("userId").as(User.class),
+                        this.userRepository.getUserByUsername(currentPrincipalName));
+                predicates.add(p1);
+            }
+            
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
                 Predicate p = b.like(root.get("purpose").as(String.class),
@@ -88,6 +99,10 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
                 predicates.add(p);
             }
         } else {
+            Predicate p1 = b.equal(root.get("userId").as(User.class),
+                        this.userRepository.getUserByUsername(currentPrincipalName));
+            predicates.add(p1);
+            
             LocalDate today = LocalDate.now();
             LocalDate start = today.withDayOfMonth(1);
             LocalDate end = today.withDayOfMonth(today.getMonth().length(today.isLeapYear()));
@@ -128,17 +143,24 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         String currentPrincipalName = authentication.getName();
 
         List<Predicate> predicates = new ArrayList<>();
-        Predicate p1 = b.equal(root.get("userId").as(User.class),
-                this.userRepository.getUserByUsername(currentPrincipalName));
-        predicates.add(p1);
 
         Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
         predicates.add(p2);
 
-        Predicate p5 = b.equal(root.get("approved").as(Boolean.class), Boolean.TRUE);
-        predicates.add(p5);
-
         if (params != null) {
+            //////////////////
+            String groupId = params.get("groupId");
+            if (groupId != null && !groupId.isEmpty()) {
+                Predicate p = b.equal(root.get("groupId").as(CustomGroup.class),
+                        groupRepository.getGroupById(Integer.parseInt(groupId)));
+                predicates.add(p);
+            }
+            else {             
+                Predicate p1 = b.equal(root.get("userId").as(User.class),
+                        this.userRepository.getUserByUsername(currentPrincipalName));
+                predicates.add(p1);
+            }
+            
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
                 Predicate p = b.like(root.get("purpose").as(String.class),
@@ -159,6 +181,22 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
                         Date.valueOf(td));
                 predicates.add(p);
             }
+        } else {
+            Predicate p1 = b.equal(root.get("userId").as(User.class),
+                        this.userRepository.getUserByUsername(currentPrincipalName));
+            predicates.add(p1);
+            
+            LocalDate today = LocalDate.now();
+            LocalDate start = today.withDayOfMonth(1);
+            LocalDate end = today.withDayOfMonth(today.getMonth().length(today.isLeapYear()));
+
+            Predicate p3 = b.greaterThanOrEqualTo(root.get("date").as(Date.class),
+                    Date.valueOf(start));
+            predicates.add(p3);
+
+            Predicate p4 = b.lessThanOrEqualTo(root.get("date").as(Date.class),
+                    Date.valueOf(end));
+            predicates.add(p4);
         }
 
         q.where(predicates.toArray(new Predicate[]{}));
@@ -166,21 +204,6 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         Query query = session.createQuery(q);
 
         return Integer.parseInt(query.getSingleResult().toString());
-    }
-
-    @Override
-    public boolean deleteExpense(int id) {
-        Session session = this.sessionFactory.getObject().getCurrentSession();
-
-        try {
-            Expense e = session.get(Expense.class, id);
-            session.delete(e);
-
-            return true;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
     }
 
     @Override
@@ -205,6 +228,9 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
 
         Predicate p5 = b.equal(root.get("approved").as(Boolean.class), Boolean.TRUE);
         predicates.add(p5);
+        
+        Predicate p6 = b.equal(root.get("confirmed").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p6);
 
         if (params != null && !params.isEmpty()) {
             String fd = params.get("fromDate");
@@ -243,8 +269,10 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
             if (expense.getGroupId() == null || expense.getGroupId().getId() <= 0) {
                 expense.setGroupId(null);
                 expense.setApproved(Boolean.TRUE);
+                expense.setConfirmed(Boolean.TRUE);
             } else {
                 expense.setApproved(Boolean.FALSE);
+                expense.setConfirmed(Boolean.FALSE);
             }
 
             session.save(expense);
@@ -259,16 +287,38 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
     @Override
     public boolean updateExpense(Expense expense) {
         Session session = this.sessionFactory.getObject().getCurrentSession();
-
+        
         try {
-            if(expense.getGroupId() != null && expense.getGroupId().getId() > 0) {
+            if(expense.getGroupId() != null &&
+                    groupRepository.checkCurrentUserInGroup( expense.getGroupId().getId() ).get(0)[1].equals(false) ) {
                 return false;
             }
-            
+
+            session.clear();
             session.update(expense);
             return true;
         } catch (Exception ex) {
             session.clear();
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean deleteExpense(int id) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+
+        try {
+            Expense expense = session.get(Expense.class, id);
+            
+            if(expense.getGroupId() != null &&
+                    groupRepository.checkCurrentUserInGroup( expense.getGroupId().getId() ).get(0)[1].equals(false) ) {
+                return false;
+            }
+
+            session.delete(expense);
+            return true;
+        } catch (Exception ex) {
             ex.printStackTrace();
             return false;
         }

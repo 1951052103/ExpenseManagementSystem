@@ -114,38 +114,47 @@
             <th><spring:message code="expense.purpose" /></th>
             <th><spring:message code="date" /></th>
             <th><spring:message code="description" /></th>
+            <th><spring:message code="label.approved" /></th>
+            <th><spring:message code="label.confirmed" /></th>
             <th><spring:message code="label.group" /></th>
             <th></th>
             <th></th>
         </tr>
 
         <c:forEach items="${expenses}" var="e">
-            <tr id="row${e.id}">
+            <tr id="expense-row${e.id}">
                 <td>
-                    <input type="number" class="form-control" value="${e.amount}" id="amount-${e.id}" />
+                    <input type="number" class="form-control" value="${e.amount}" id="expense-amount-${e.id}" />
                 </td>
                 <td>
-                    <input type="text" class="form-control" value="${e.purpose}" id="purpose-${e.id}" />
+                    <input type="text" class="form-control" value="${e.purpose}" id="expense-purpose-${e.id}" />
                 </td>
                 <td>
                     <fmt:formatDate pattern="yyyy-MM-dd" value="${e.date}" var="date"/>
-                    <input type="date" class="form-control" value="${date}" id="date-${e.id}" />
+                    <input type="date" class="form-control" value="${date}" id="expense-date-${e.id}" />
                 </td>
                 <td>
-                    <textarea class="form-control" id="description-${e.id}">${e.description}</textarea>
-                </td>
-                <td>
-                    <input type="text" class="form-control" value="${e.groupId.name}" id="group-${e.id}" disabled />
+                    <textarea class="form-control" id="expense-description-${e.id}">${e.description}</textarea>
                 </td>
                 
                 <td>
-                    <div class="spinner-border text-info" style="display:none" id="updateLoad${e.id}"></div>
+                    <input type="text" class="form-control" value="${e.approved}" id="expense-approved-${e.id}" disabled />
+                </td>
+                <td>
+                    <input type="text" class="form-control" value="${e.confirmed}" id="expense-confirmed-${e.id}" disabled />
+                </td>
+                <td>
+                    <input type="text" class="form-control" value="${e.groupId.name}" id="expense-group-${e.id}" disabled />
+                </td>
+                
+                <td>
+                    <div class="spinner-border text-info" style="display:none" id="expense-updateLoad${e.id}"></div>
                     <input type="button" 
-                           onclick="updateExpense('${url}/${e.id}', ${e.id}, this, '<spring:message code="message.update" />', '<spring:message code="message.amount.error" />')" 
+                           onclick="updateExpense('${url}/${e.id}', ${e.id}, this, '<spring:message code="message.update" />', '<spring:message code="message.error" />')" 
                            class="btn btn-primary" value="<spring:message code="button.update" />" />
                 </td>
                 <td>
-                    <div class="spinner-border text-info" style="display:none" id="load${e.id}"></div>
+                    <div class="spinner-border text-info" style="display:none" id="expense-load${e.id}"></div>
                     <input type="button" 
                            onclick="deleteExpense('${url}/${e.id}', ${e.id}, this, '<spring:message code="message.delete" />', '<spring:message code="message.error" />')" 
                            class="btn btn-danger" value="<spring:message code="button.delete" />" />

@@ -39,7 +39,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public int checkCurrentUserInGroup(int groupId) {
+    public List<Object[]> checkCurrentUserInGroup(int groupId) {
         return this.groupRepository.checkCurrentUserInGroup(groupId);
     }
     

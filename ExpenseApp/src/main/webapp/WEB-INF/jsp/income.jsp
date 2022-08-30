@@ -114,38 +114,47 @@
             <th><spring:message code="income.source" /></th>
             <th><spring:message code="date" /></th>
             <th><spring:message code="description" /></th>
+            <th><spring:message code="label.approved" /></th>
+            <th><spring:message code="label.confirmed" /></th>
             <th><spring:message code="label.group" /></th>
             <th></th>
             <th></th>
         </tr>
 
         <c:forEach items="${incomes}" var="i">
-            <tr id="row${i.id}">
+            <tr id="income-row${i.id}">
                 <td>
-                    <input type="number" class="form-control" value="${i.amount}" id="amount-${i.id}"/>
+                    <input type="number" class="form-control" value="${i.amount}" id="income-amount-${i.id}"/>
                 </td>
                 <td>  
-                    <input type="text" class="form-control" value="${i.source}" id="source-${i.id}"/>
+                    <input type="text" class="form-control" value="${i.source}" id="income-source-${i.id}"/>
                 </td>
                 <td>
                     <fmt:formatDate pattern="yyyy-MM-dd" value="${i.date}" var="date"/>
-                    <input type="date" class="form-control" value="${date}" id="date-${i.id}" />
+                    <input type="date" class="form-control" value="${date}" id="income-date-${i.id}" />
                 </td>
                 <td>
-                    <textarea class="form-control" id="description-${i.id}">${i.description}</textarea>
-                </td>
-                <td>
-                    <input type="text" class="form-control" value="${i.groupId.name}" id="group-${i.id}" disabled />
+                    <textarea class="form-control" id="income-description-${i.id}">${i.description}</textarea>
                 </td>
                 
                 <td>
-                    <div class="spinner-border text-info" style="display:none" id="updateLoad${i.id}"></div>
+                    <input type="text" class="form-control" value="${i.approved}" id="income-approved-${i.id}" disabled />
+                </td>
+                <td>
+                    <input type="text" class="form-control" value="${i.confirmed}" id="income-confirmed-${i.id}" disabled />
+                </td>
+                <td>
+                    <input type="text" class="form-control" value="${i.groupId.name}" id="income-group-${i.id}" disabled />
+                </td>
+                
+                <td>
+                    <div class="spinner-border text-info" style="display:none" id="income-updateLoad${i.id}"></div>
                     <input type="button" 
-                           onclick="updateIncome('${url}/${i.id}', ${i.id}, this, '<spring:message code="message.update" />', '<spring:message code="message.amount.error" />')" 
+                           onclick="updateIncome('${url}/${i.id}', ${i.id}, this, '<spring:message code="message.update" />', '<spring:message code="message.error" />')" 
                            class="btn btn-primary" value="<spring:message code="button.update" />" />
                 </td>
                 <td>
-                    <div class="spinner-border text-info" style="display:none" id="load${i.id}"></div>
+                    <div class="spinner-border text-info" style="display:none" id="income-load${i.id}"></div>
                     <input type="button" 
                            onclick="deleteIncome('${url}/${i.id}', ${i.id}, this, '<spring:message code="message.delete" />', '<spring:message code="message.error" />')" 
                            class="btn btn-danger" value="<spring:message code="button.delete" />" />

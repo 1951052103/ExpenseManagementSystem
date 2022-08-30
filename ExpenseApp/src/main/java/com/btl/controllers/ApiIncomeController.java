@@ -32,9 +32,12 @@ public class ApiIncomeController {
     private IncomeService incomeService;
     
     @DeleteMapping("/income/{incomeId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable(value = "incomeId") int id) {
-        this.incomeService.deleteIncome(id);
+    public ResponseEntity<?> delete(@PathVariable(value = "incomeId") int id) {
+        if(this.incomeService.deleteIncome(id)) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
     
     @PostMapping(path = "/income/{incomeId}", produces = {
@@ -51,9 +54,22 @@ public class ApiIncomeController {
         income.setDate(Date.valueOf(params.get("date")));
         income.setDescription(params.get("description"));
 
-        this.incomeService.updateIncome(income);
+        if (params.get("approved").equals("true")) {
+            income.setApproved(true);
+        } else {
+            income.setApproved(false);
+        }
 
-        return new ResponseEntity<>(income, HttpStatus.CREATED);
+        if (params.get("confirmed").equals("true")) {
+            income.setConfirmed(true);
+        } else {
+            income.setConfirmed(false);
+        }
+        
+        if(this.incomeService.updateIncome(income)) {
+            return new ResponseEntity<>(income, HttpStatus.CREATED);
+        }
 
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 }
