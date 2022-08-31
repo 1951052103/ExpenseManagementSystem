@@ -9,11 +9,14 @@ import com.btl.pojo.GroupUser;
 import com.btl.service.ExpenseService;
 import com.btl.service.GroupService;
 import com.btl.service.IncomeService;
+import com.btl.service.UserService;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,11 +34,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class GroupController {
 
     @Autowired
+    private Environment env;
+    @Autowired
     private GroupService groupService;
     @Autowired
     private ExpenseService expenseService;
     @Autowired
     private IncomeService incomeService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/group")
     public String group(Model model, @RequestParam Map<String, String> params) {
@@ -90,9 +97,30 @@ public class GroupController {
 
             params.put("groupId", String.valueOf(groupId));
             
-            model.addAttribute("users", this.groupService.getUsersInGroup(params, 0, 0));
-            model.addAttribute("expenses", this.expenseService.getExpenses(params, 0, 0));
-            model.addAttribute("incomes", this.incomeService.getIncomes(params, 0, 0));
+            int pageSize = Integer.parseInt(params.getOrDefault("pageSize", env.getProperty("page.key.10")));
+            int page = Integer.parseInt(params.getOrDefault("page", "1"));
+            
+            model.addAttribute("users", this.groupService.getUsersInGroup(params, pageSize, page));
+            model.addAttribute("expenses", this.expenseService.getExpenses(params, pageSize, page));
+            model.addAttribute("incomes", this.incomeService.getIncomes(params, pageSize, page));
+            
+            int userCounter = this.userService.countUser(params);
+            int expenseCounter = this.expenseService.countExpense(params);
+            int IncomeCounter = this.incomeService.countIncome(params);
+            
+            int counter = Math.max(userCounter, Math.max(expenseCounter, IncomeCounter));
+            
+            model.addAttribute("counter", counter);
+            
+            LocalDate today = LocalDate.now();
+            String start = today.withDayOfMonth(1).toString();
+            String end = today.withDayOfMonth(today.getMonth().length(today.isLeapYear())).toString();
+            
+            model.addAttribute("pageSize", pageSize);
+            model.addAttribute("page", page);
+            model.addAttribute("kw", params.getOrDefault("kw", ""));
+            model.addAttribute("fd", params.getOrDefault("fromDate", start));
+            model.addAttribute("td", params.getOrDefault("toDate", end));
             
             if(check.get(0)[1].equals(true) ) {
                 model.addAttribute("isLeader", true);

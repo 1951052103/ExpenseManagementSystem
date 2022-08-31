@@ -52,4 +52,9 @@ public class GroupServiceImpl implements GroupService {
     public List<User> getUsersInGroup(Map<String, String> params, int pageSize, int page) {
         return this.groupRepository.getUsersInGroup(params, page, page);
     }
+
+    @Override
+    public boolean deleteUserFromGroup(int groupId, String username) {
+        return this.groupRepository.deleteUserFromGroup(groupId, username);
+    }
 }

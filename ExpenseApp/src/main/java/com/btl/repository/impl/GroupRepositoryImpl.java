@@ -218,4 +218,35 @@ public class GroupRepositoryImpl implements GroupRepository {
         
         return query.getResultList();
     }
+
+    @Override
+    public boolean deleteUserFromGroup(int groupId, String username) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<GroupUser> q = b.createQuery(GroupUser.class);
+        
+        Root root = q.from(GroupUser.class);
+        q.select(root);
+        
+        List<Predicate> predicates = new ArrayList<>();
+        Predicate p1 = b.equal(root.get("groupId").as(CustomGroup.class), this.getGroupById(groupId));
+        predicates.add(p1);
+        
+        Predicate p2 = b.equal(root.get("userId").as(User.class), this.userRepository.getUserByUsername(username));
+        predicates.add(p2);
+        
+        q.where(predicates.toArray(new Predicate[]{}));
+        
+        Query query = session.createQuery(q);
+        GroupUser groupUser = (GroupUser) query.getResultList().get(0);
+        
+        try {
+
+            session.delete(groupUser);
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
 }

@@ -20,4 +20,5 @@ public interface GroupRepository {
     List<Object[]> checkCurrentUserInGroup(int groupId);
     List<CustomGroup> getGroupsOfCurrentUser(Map<String, String> params, int pageSize, int page);
     List<User> getUsersInGroup(Map<String, String> params, int pageSize, int page);
+    boolean deleteUserFromGroup(int groupId, String username);
 }
