@@ -76,24 +76,34 @@
                 <th><spring:message code="label.username" /></th>
                 <th><spring:message code="label.firstName" /></th>
                 <th><spring:message code="label.lastName" /></th>
+                <th><spring:message code="label.unconfirmedExpense" /></th>
+                <th><spring:message code="label.unconfirmedIncome" /></th>
                 <th></th>
             </tr>
             <c:forEach items="${users}" var="u">
-                <tr id="user-row${u.id}">
+                <tr id="user-row${u[0].id}">
                     <td>
-                        ${u.username}
+                        ${u[0].username}
                     </td>
                     <td>
-                        ${u.firstName}
+                        ${u[0].firstName}
                     </td>
                     <td>
-                        ${u.lastName}
+                        ${u[0].lastName}
                     </td>
-                    <c:if test="${isLeader == true && u.username != currentUser.username}">
+                    
+                    <td>
+                        ${u[1]}
+                    </td>
+                    <td>
+                        ${u[2]}
+                    </td>
+                    
+                    <c:if test="${isLeader == true && u[0].username != currentUser.username}">
                         <td>
-                            <div class="spinner-border text-info" style="display:none" id="user-load${u.id}"></div>
+                            <div class="spinner-border text-info" style="display:none" id="user-load${u[0].id}"></div>
                             <input type="button" 
-                                   onclick="deleteUserFromGroup('${url}/${u.username}', ${u.id}, this, '<spring:message code="message.delete" />', '<spring:message code="message.error" />')" 
+                                   onclick="deleteUserFromGroup('${url}/${u[0].username}', ${u[0].id}, this, '<spring:message code="message.delete" />', '<spring:message code="message.error" />')" 
                                    class="btn btn-danger" value="<spring:message code="button.delete" />" />
                         </td>
                     </c:if>

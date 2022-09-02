@@ -197,7 +197,7 @@ public class GroupRepositoryImpl implements GroupRepository {
         predicates.add(p6);
         
         if (params != null && !params.isEmpty()) {
-            String kw = params.get("kw");
+            String kw = params.getOrDefault("kw", "");
             if (kw != null && !kw.isEmpty()) {
                 Predicate p = b.like(rootUser.get("username").as(String.class),
                         String.format("%%%s%%", kw));
@@ -215,7 +215,7 @@ public class GroupRepositoryImpl implements GroupRepository {
             query.setFirstResult(start);
             query.setMaxResults(pageSize);
         }
-        
+
         return query.getResultList();
     }
 

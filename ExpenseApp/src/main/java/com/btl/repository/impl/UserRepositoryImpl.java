@@ -63,6 +63,27 @@ public class UserRepositoryImpl implements UserRepository {
     }
     
     @Override
+    public User getUserByUserId(int userId) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<User> q = b.createQuery(User.class);
+        
+        Root root = q.from(User.class);
+        q.select(root);
+        
+        List<Predicate> predicates = new ArrayList<>();
+
+        Predicate p3 = b.equal(root.get("id"), userId);
+        predicates.add(p3);
+        
+        q.where( predicates.toArray(new Predicate[]{}) );
+
+        Query query = session.createQuery(q);
+
+        return (User) query.getSingleResult();
+    }
+    
+    @Override
     public int countUserByUsername(String username){
         Session session = this.sessionFactory.getObject().getCurrentSession();
         CriteriaBuilder b = session.getCriteriaBuilder();
@@ -116,8 +137,8 @@ public class UserRepositoryImpl implements UserRepository {
         q.select(root);
         
         List<Predicate> predicates = new ArrayList<>();
-        Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
-        predicates.add(p2);
+//        Predicate p2 = b.equal(root.get("active").as(Boolean.class), Boolean.TRUE);
+//        predicates.add(p2);
         
         if (params != null && !params.isEmpty()) {
             String kw = params.get("kw");
@@ -169,5 +190,39 @@ public class UserRepositoryImpl implements UserRepository {
         Query query = session.createQuery(q);
         
         return Integer.parseInt(query.getSingleResult().toString());
+    }
+    
+    @Override
+    public boolean updateUser(User user) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        
+        try {
+            user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword()));
+            
+            session.clear();
+            session.update(user);
+            return true;
+        } catch (Exception ex) {
+            session.clear();
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean deleteUser(int userId) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+
+        try {
+            User user = this.getUserByUserId(userId);
+
+            session.clear();
+            session.delete(user);
+            return true;
+        } catch (Exception ex) {
+            session.clear();
+            ex.printStackTrace();
+            return false;
+        }
     }
 }

@@ -57,4 +57,9 @@ public class IncomeServiceImpl implements IncomeService {
     public Income getIncomeById(int incomeId) {
         return this.incomeRepository.getIncomeById(incomeId);
     }
+    
+    @Override
+    public List<Object[]> getUnconfirmedTotalIncomeOfUsersInGroup(Map<String, String> params) {
+        return this.incomeRepository.getUnconfirmedTotalIncomeOfUsersInGroup(params);
+    }
 }

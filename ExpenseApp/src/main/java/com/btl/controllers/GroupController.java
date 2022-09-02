@@ -4,13 +4,16 @@
  */
 package com.btl.controllers;
 
+import com.btl.pojo.User;
 import com.btl.pojo.CustomGroup;
 import com.btl.pojo.GroupUser;
 import com.btl.service.ExpenseService;
 import com.btl.service.GroupService;
 import com.btl.service.IncomeService;
 import com.btl.service.UserService;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,45 +93,63 @@ public class GroupController {
     public String groupDetails(@PathVariable(value = "groupId") int groupId,
             Model model, @RequestParam Map<String, String> params) {
 
-        List<Object[]> check = this.groupService.checkCurrentUserInGroup(groupId);      
+        List<Object[]> check = this.groupService.checkCurrentUserInGroup(groupId);
         if (Integer.parseInt(check.get(0)[0].toString()) > 0) {
             model.addAttribute("joined", true);
             model.addAttribute("group", this.groupService.getGroupById(groupId));
 
             params.put("groupId", String.valueOf(groupId));
-            
+
             int pageSize = Integer.parseInt(params.getOrDefault("pageSize", env.getProperty("page.key.10")));
             int page = Integer.parseInt(params.getOrDefault("page", "1"));
+
+            List<Object[]> list = new ArrayList<>();
+            for (User user : this.groupService.getUsersInGroup(params, pageSize, page)) {
+                BigDecimal eAmount = BigDecimal.ZERO;
+                BigDecimal iAmount = BigDecimal.ZERO;
+                for (Object[] unconfirmedTotalExpense : this.expenseService.getUnconfirmedTotalExpenseOfUsersInGroup(params)) {
+                    if (user.getUsername().equals(unconfirmedTotalExpense[1].toString())) {
+                        eAmount = (BigDecimal) unconfirmedTotalExpense[0];
+                        break;
+                    }
+                }
+                for (Object[] unconfirmedTotalIncome : this.incomeService.getUnconfirmedTotalIncomeOfUsersInGroup(params)) {
+                    if (user.getUsername().equals(unconfirmedTotalIncome[1].toString())) {
+                        iAmount = (BigDecimal) unconfirmedTotalIncome[0];
+                        break;
+                    }
+                }
+                Object[] o = new Object[]{user, eAmount, iAmount};
+                list.add(o);
+            }
             
-            model.addAttribute("users", this.groupService.getUsersInGroup(params, pageSize, page));
+            model.addAttribute("users", list);
             model.addAttribute("expenses", this.expenseService.getExpenses(params, pageSize, page));
             model.addAttribute("incomes", this.incomeService.getIncomes(params, pageSize, page));
-            
+
             int userCounter = this.userService.countUser(params);
             int expenseCounter = this.expenseService.countExpense(params);
             int IncomeCounter = this.incomeService.countIncome(params);
-            
+
             int counter = Math.max(userCounter, Math.max(expenseCounter, IncomeCounter));
-            
+
             model.addAttribute("counter", counter);
-            
+
             LocalDate today = LocalDate.now();
             String start = today.withDayOfMonth(1).toString();
             String end = today.withDayOfMonth(today.getMonth().length(today.isLeapYear())).toString();
-            
+
             model.addAttribute("pageSize", pageSize);
             model.addAttribute("page", page);
             model.addAttribute("kw", params.getOrDefault("kw", ""));
             model.addAttribute("fd", params.getOrDefault("fromDate", start));
             model.addAttribute("td", params.getOrDefault("toDate", end));
-            
-            if(check.get(0)[1].equals(true) ) {
+
+            if (check.get(0)[1].equals(true)) {
                 model.addAttribute("isLeader", true);
             }
-            
-        }
 
-        System.out.println(groupService.checkCurrentUserInGroup(groupId).get(0)[1]);
+        }
 
         return "group-details";
     }

@@ -329,4 +329,46 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         Session session = this.sessionFactory.getObject().getCurrentSession();
         return session.get(Expense.class, expenseId);
     }
+    
+    @Override
+    public List<Object[]> getUnconfirmedTotalExpenseOfUsersInGroup(Map<String, String> params) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> q = b.createQuery(Object[].class);
+
+        Root rootExpense = q.from(Expense.class);
+        Root rootUser = q.from(User.class);
+        
+        List<Predicate> predicates = new ArrayList<>();
+
+        Predicate p1 = b.equal(rootUser.get("id"), rootExpense.get("userId"));
+        predicates.add(p1);
+        
+        Predicate p2 = b.equal(rootExpense.get("active").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p2);
+
+        Predicate p5 = b.equal(rootExpense.get("approved").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p5);
+        
+        Predicate p6 = b.equal(rootExpense.get("confirmed").as(Boolean.class), Boolean.FALSE);
+        predicates.add(p6);
+        
+        if (params != null) {
+            String groupId = params.get("groupId");
+            if (groupId != null && !groupId.isEmpty()) {
+                Predicate p = b.equal(rootExpense.get("groupId").as(CustomGroup.class),
+                        this.groupRepository.getGroupById(Integer.parseInt(groupId)));
+                predicates.add(p);
+            }
+        }
+        
+        q.multiselect(b.sum(rootExpense.get("amount")), rootUser.get("username"));
+        q.where(predicates.toArray(new Predicate[]{}));
+        q.groupBy(rootExpense.get("userId"));
+        q.orderBy(b.desc(rootUser.get("id")));
+        
+        Query query = session.createQuery(q);
+
+        return query.getResultList();
+    }
 }

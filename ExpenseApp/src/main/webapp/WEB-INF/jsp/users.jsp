@@ -10,6 +10,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <script src="<c:url value="/js/pagination.js" />"></script>
+<script src="<c:url value="/js/userAction.js" />"></script>
 
 <h1 class="text-center text-danger"><spring:message code="label.admin" /></h1>
 
@@ -53,52 +54,66 @@
             <th><spring:message code="label.username" /></th>
             <th><spring:message code="label.password" /></th>
             <th><spring:message code="label.role" /></th>
-            <th><spring:message code="label.avatar" /></th>
+            <th><spring:message code="label.active" /></th>
             <th></th>
             <th></th>
         </tr>
 
         <c:forEach items="${users}" var="u">
-            <tr id="row${u.id}">
+            <tr id="user-row${u.id}">
                 <td>
-                    <input type="text" class="form-control" value="${u.username}" />
+                    <input onClick="this.select();" type="text" class="form-control" value="${u.username}" id="user-username-${u.id}" />
                 </td>
                 <td>
-                    <input type="text" class="form-control" value="${u.password}" />
+                    <input onClick="this.select();" type="password" class="form-control" value="${u.password}" id="user-password-${u.id}" />
                 </td>
                 <td>
-                    <select id="role-${u.id}" class="form-control" value="${u.role}">
+                    <select id="user-role-${u.id}" class="form-control" value="${u.role}">
                         <c:choose>
                             <c:when test="${u.role == 'USER'}">
-                                <option value="USER" selected><spring:message code="label.role.user" /></option>
-                                <option value="BUSINESS"><spring:message code="label.role.business" /></option>
-                                <option value="ADMIN"><spring:message code="label.role.admin" /></option>
+                                <option value="<spring:message code="label.role.user" />" selected><spring:message code="label.role.user" /></option>
+                                <option value="<spring:message code="label.role.business" />"><spring:message code="label.role.business" /></option>
+                                <option value="<spring:message code="label.role.admin" />"><spring:message code="label.role.admin" /></option>
                             </c:when>
                             <c:when test="${u.role == 'BUSINESS'}">
-                                <option value="USER"><spring:message code="label.role.user" /></option>
-                                <option value="BUSINESS" selected><spring:message code="label.role.business" /></option>
-                                <option value="ADMIN"><spring:message code="label.role.admin" /></option>
+                                <option value="<spring:message code="label.role.user" />"><spring:message code="label.role.user" /></option>
+                                <option value="<spring:message code="label.role.business" />" selected><spring:message code="label.role.business" /></option>
+                                <option value="<spring:message code="label.role.admin" />"><spring:message code="label.role.admin" /></option>
                             </c:when>
                             <c:otherwise>
-                                <option value="USER"><spring:message code="label.role.user" /></option>
-                                <option value="BUSINESS" selected><spring:message code="label.role.business" /></option>
-                                <option value="ADMIN" selected><spring:message code="label.role.admin" /></option>
+                                <option value="<spring:message code="label.role.user" />"><spring:message code="label.role.user" /></option>
+                                <option value="<spring:message code="label.role.business" />"><spring:message code="label.role.business" /></option>
+                                <option value="<spring:message code="label.role.admin" />" selected><spring:message code="label.role.admin" /></option>
                             </c:otherwise>
                         </c:choose>
 
                     </select>
                 </td>
+                
                 <td>
-                    <input type="text" class="form-control" value="${u.avatar}" disabled="" />
+                    <select class="form-control" id="user-active-${u.id}">
+                        <c:choose>
+                            <c:when test="${u.active == true}">
+                                <option value="<spring:message code="label.true" />" selected><spring:message code="label.true" /></option>
+                                <option value="<spring:message code="label.false" />"><spring:message code="label.false" /></option>
+                            </c:when>
+                            <c:otherwise>
+                                <option value="<spring:message code="label.true" />"><spring:message code="label.true" /></option>
+                                <option value="<spring:message code="label.false" />" selected><spring:message code="label.false" /></option>
+                            </c:otherwise>
+                        </c:choose>
+                    </select>
                 </td>
 
                 <td>
-                    <div class="spinner-border text-info" style="display:none" id="updateLoad${e.id}"></div>
-                    <input type="button" class="btn btn-primary" value="<spring:message code="button.update" />" />
+                    <div class="spinner-border text-info" style="display:none" id="user-updateLoad${u.id}"></div>
+                    <input type="button" class="btn btn-primary" value="<spring:message code="button.update" />" 
+                           onclick="updateUser('${url}/${u.id}', ${u.id}, this, '<spring:message code="message.update" />', '<spring:message code="message.error" />')" />
                 </td>
                 <td>
-                    <div class="spinner-border text-info" style="display:none" id="load${e.id}"></div>
-                    <input type="button" class="btn btn-danger" value="<spring:message code="button.delete" />" />
+                    <div class="spinner-border text-info" style="display:none" id="user-load${u.id}"></div>
+                    <input type="button" class="btn btn-danger" value="<spring:message code="button.delete" />" 
+                           onclick="deleteUser('${url}/${u.id}', ${u.id}, this, '<spring:message code="message.delete" />', '<spring:message code="message.error" />')" />
                 </td>
             </tr>
         </c:forEach>

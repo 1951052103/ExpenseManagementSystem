@@ -62,4 +62,9 @@ public class ExpenseServiceImpl implements ExpenseService{
     public Expense getExpenseById(int expenseId) {
         return this.expenseRepository.getExpenseById(expenseId);
     }
+    
+    @Override
+    public List<Object[]> getUnconfirmedTotalExpenseOfUsersInGroup(Map<String, String> params) {
+        return this.expenseRepository.getUnconfirmedTotalExpenseOfUsersInGroup(params);
+    }
 }

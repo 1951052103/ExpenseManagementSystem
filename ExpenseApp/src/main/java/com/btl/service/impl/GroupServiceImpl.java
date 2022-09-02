@@ -50,7 +50,7 @@ public class GroupServiceImpl implements GroupService {
     
     @Override
     public List<User> getUsersInGroup(Map<String, String> params, int pageSize, int page) {
-        return this.groupRepository.getUsersInGroup(params, page, page);
+        return this.groupRepository.getUsersInGroup(params, pageSize, page);
     }
 
     @Override

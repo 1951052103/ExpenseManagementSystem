@@ -14,8 +14,11 @@ import java.util.Map;
  */
 public interface UserRepository {
     User getUserByUsername(String username);
+    User getUserByUserId(int userId);
     int countUserByUsername(String username);
     boolean addUser(User user);
     List<User> getUsers(Map<String, String> params, int pageSize, int page);
     int countUser(Map<String, String> params);
+    boolean updateUser(User user);
+    boolean deleteUser(int userId);
 }

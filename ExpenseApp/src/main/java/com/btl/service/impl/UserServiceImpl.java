@@ -49,6 +49,11 @@ public class UserServiceImpl implements UserService {
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(), user.getPassword(), authorities);
     }
+    
+    @Override
+    public User getUserByUserId(int userId) {
+        return this.userRepository.getUserByUserId(userId);
+    }
 
     @Override
     public int countUserByUsername(String username) {
@@ -70,4 +75,13 @@ public class UserServiceImpl implements UserService {
         return this.userRepository.countUser(params);
     }
 
+    @Override
+    public boolean updateUser(User user) {
+        return this.userRepository.updateUser(user);
+    }
+    
+    @Override
+    public boolean deleteUser(int userId) {
+        return this.userRepository.deleteUser(userId);
+    }
 }

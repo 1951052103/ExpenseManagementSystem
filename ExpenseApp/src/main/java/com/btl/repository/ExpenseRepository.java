@@ -21,4 +21,5 @@ public interface ExpenseRepository {
     boolean addExpense(Expense expense);
     boolean updateExpense(Expense expense);
     Expense getExpenseById(int expenseId);
+    List<Object[]> getUnconfirmedTotalExpenseOfUsersInGroup(Map<String, String> params);
 }
