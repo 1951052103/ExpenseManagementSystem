@@ -62,4 +62,9 @@ public class IncomeServiceImpl implements IncomeService {
     public List<Object[]> getUnconfirmedTotalIncomeOfUsersInGroup(Map<String, String> params) {
         return this.incomeRepository.getUnconfirmedTotalIncomeOfUsersInGroup(params);
     }
+    
+    @Override
+    public List<Object[]> getIncomeStatsByYear(int year) {
+        return this.incomeRepository.getIncomeStatsByYear(year);
+    }
 }

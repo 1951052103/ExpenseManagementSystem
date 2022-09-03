@@ -368,4 +368,27 @@ public class IncomeRepositoryImpl implements IncomeRepository {
 
         return query.getResultList();
     }
+    
+    @Override
+    public List<Object[]> getIncomeStatsByYear(int year) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> q = b.createQuery(Object[].class);
+        
+        Root root = q.from(Income.class);
+        
+        List<Predicate> predicates = new ArrayList<>();
+        
+        Predicate p2 = b.equal(b.function("YEAR", Integer.class, root.get("date")), year);
+        predicates.add(p2);
+        
+        q.where(predicates.toArray(new Predicate[]{}));
+        
+        q.multiselect(b.function("MONTH", Integer.class, root.get("date")), b.sum(root.get("amount")));
+        q.groupBy(b.function("MONTH", Integer.class, root.get("date")));
+        q.orderBy(b.asc( b.function("MONTH", Integer.class, root.get("date"))));
+        
+        Query query = session.createQuery(q);
+        return query.getResultList();
+    }
 }

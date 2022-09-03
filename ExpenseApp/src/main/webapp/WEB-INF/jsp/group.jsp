@@ -10,6 +10,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
+<script src="<c:url value="/js/pagination.js" />"></script>
+
 <h1 class="text-center text-danger"><spring:message code="label.group" /></h1>
 
 <div>
@@ -42,6 +44,24 @@
         <br/><br/>
     </form:form>
 
+    <div>
+        <label for="page-size" class="form-label"><spring:message code="label.pagesize" /></label>
+        <select id="page-size" name="page-size" onchange="setPageSize(event)">
+            <c:forEach items="${sizes}" var="s" >
+
+                <c:choose>
+                    <c:when test="${pageSize == s[1]}">
+                        <option selected value="${s[1]}">${s[0]}</option>
+                    </c:when>
+                    <c:otherwise>
+                        <option value="${s[1]}">${s[0]}</option>
+                    </c:otherwise>
+                </c:choose>
+
+            </c:forEach>
+        </select>
+    </div>    
+        
     <c:url value="/group" var="action" />
     <div>
         <form method="get" action="${action}" class="d-flex">
@@ -81,6 +101,27 @@
                 </td>
             </tr>
         </c:forEach>
-
     </table>
+            
+    <c:if test="${pageSize > 0 && Math.ceil(groupCounter/pageSize) > 1}">
+        <ul class="pagination">
+            <c:forEach begin="1" end="${Math.ceil(groupCounter/pageSize)}" var="i">
+                <c:url value="/group" var="u">
+                    <c:param name="kw" value="${kw}" />
+                    <c:param name="pageSize" value="${pageSize}" />
+                    <c:param name="page" value="${i}" />
+                </c:url>
+
+                <c:choose>
+                    <c:when test="${page == i}">
+                        <li class="page-item"><a class="page-link bg-primary text-light" href="${u}">${i}</a></li>  
+                        </c:when>
+                        <c:otherwise>
+                        <li class="page-item"><a class="page-link" href="${u}">${i}</a></li>   
+                        </c:otherwise>
+                    </c:choose>
+
+            </c:forEach>
+        </ul>
+    </c:if>        
 </div>

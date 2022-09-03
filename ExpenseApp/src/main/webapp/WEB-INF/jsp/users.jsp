@@ -23,11 +23,11 @@
             <c:forEach items="${sizes}" var="s" >
 
                 <c:choose>
-                    <c:when test="${pageSize == s.getValue()}">
-                        <option selected value="${s.getValue()}">${s.getKey()}</option>
+                    <c:when test="${pageSize == s[1]}">
+                        <option selected value="${s[1]}">${s[0]}</option>
                     </c:when>
                     <c:otherwise>
-                        <option value="${s.getValue()}">${s.getKey()}</option>
+                        <option value="${s[1]}">${s[0]}</option>
                     </c:otherwise>
                 </c:choose>
 

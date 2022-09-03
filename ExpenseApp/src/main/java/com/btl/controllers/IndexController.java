@@ -4,19 +4,19 @@
  */
 package com.btl.controllers;
 
-import com.btl.pojo.User;
 import com.btl.service.ExpenseService;
 import com.btl.service.IncomeService;
-import com.btl.service.UserService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 @ControllerAdvice
+@PropertySource("classpath:messages.properties")
 public class IndexController {
 
     @Autowired
@@ -42,11 +43,16 @@ public class IndexController {
     public void commonAttributes(Model model, HttpSession session) {
         model.addAttribute("currentUser", session.getAttribute("currentUser"));
 
-        Map<String, Integer> sizes = new HashMap<>();
-        sizes.put(env.getProperty("page.key.10"), Integer.parseInt(env.getProperty("page.value.10")));
-        sizes.put(env.getProperty("page.key.20"), Integer.parseInt(env.getProperty("page.value.20")));
-        sizes.put(env.getProperty("page.key.all"), Integer.parseInt(env.getProperty("page.value.all")));
-        model.addAttribute("sizes", sizes);
+        
+        List<Object[]> size = new ArrayList<>();
+        size.add(new Object[]{env.getProperty("page.key.2"), Integer.parseInt(env.getProperty("page.value.2"))});
+        size.add(new Object[]{env.getProperty("page.key.10"), Integer.parseInt(env.getProperty("page.value.10"))});
+        size.add(new Object[]{env.getProperty("page.key.20"), Integer.parseInt(env.getProperty("page.value.20"))});
+        size.add(new Object[]{env.getProperty("page.key.50"), Integer.parseInt(env.getProperty("page.value.50"))});
+        size.add(new Object[]{env.getProperty("page.key.100"), Integer.parseInt(env.getProperty("page.value.100"))});
+        size.add(new Object[]{env.getProperty("page.key.all"), Integer.parseInt(env.getProperty("page.value.all"))});
+        
+        model.addAttribute("sizes", size);
     }
 
     @RequestMapping("/")
@@ -87,7 +93,25 @@ public class IndexController {
         model.addAttribute("lytd", end);
 
         model.addAttribute("lastYearExpense", getExpense(myParams));
+        
+        //Stats
+        int month = 0, year = 0;
+        String monthStats = params.getOrDefault("month", "");
+        if(monthStats != null && !monthStats.isEmpty()) {
+            year = Integer.parseInt(monthStats.substring(0, 4));
+            month = Integer.parseInt(monthStats.substring(5, 7));
+        }
+        else {
+             month = today.getMonthValue();
+             year = today.getYear();
+        }
 
+        model.addAttribute("month", month);
+        model.addAttribute("year", year);
+        model.addAttribute("expenseStatsByMonth", this.expenseService.getExpenseStatsByMonth(month, year));
+        model.addAttribute("expenseStatsByYear", this.expenseService.getExpenseStatsByYear(year));
+        model.addAttribute("incomeStatsByYear", this.incomeService.getIncomeStatsByYear(year));
+        
         return "index";
     }
 

@@ -169,7 +169,57 @@ public class GroupRepositoryImpl implements GroupRepository {
         
         Query query = session.createQuery(q);
         
+        if (pageSize > 0) {
+            int start = (page - 1) * pageSize;
+            query.setFirstResult(start);
+            query.setMaxResults(pageSize);
+        }
+        
         return query.getResultList();
+    }
+    
+    @Override
+    public int countGroupsOfCurrentUser(Map<String, String> params) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<Long> q = b.createQuery(Long.class);
+
+        Root rootGroup = q.from(CustomGroup.class);
+        Root rootGroupUser = q.from(GroupUser.class);
+        
+        q.select(b.count(rootGroup.get("id")));
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        
+        List<Predicate> predicates = new ArrayList<>();
+        Predicate p1 = b.equal(rootGroupUser.get("userId").as(User.class),
+                this.userRepository.getUserByUsername(currentPrincipalName));
+        predicates.add(p1);
+        
+        Predicate p2 = b.equal(rootGroupUser.get("active").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p2);
+        
+        Predicate p3 = b.equal(rootGroup.get("active").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p3);
+        
+        Predicate p4 = b.equal(rootGroup.get("id"), rootGroupUser.get("groupId"));
+        predicates.add(p4);
+        
+        if (params != null && !params.isEmpty()) {
+            String kw = params.get("kw");
+            if (kw != null && !kw.isEmpty()) {
+                Predicate p = b.like(rootGroup.get("name").as(String.class),
+                        String.format("%%%s%%", kw));
+                predicates.add(p);
+            }
+        }
+        
+        q.where(predicates.toArray(new Predicate[]{}));
+        
+        Query query = session.createQuery(q);
+
+        return Integer.parseInt(query.getSingleResult().toString());
     }
     
     @Override
@@ -245,6 +295,75 @@ public class GroupRepositoryImpl implements GroupRepository {
             session.delete(groupUser);
             return true;
         } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    
+    @Override
+    public List<Object[]> getFreeSchedulesInGroup(int groupId) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> q = b.createQuery(Object[].class);
+        
+        Root rootUser = q.from(User.class);
+        Root rootGroupUser = q.from(GroupUser.class);
+        
+        List<Predicate> predicates = new ArrayList<>();
+        
+        Predicate p1 = b.equal(rootUser.get("id"), rootGroupUser.get("userId"));
+        predicates.add(p1);
+        
+        Predicate p2 = b.equal(rootGroupUser.get("active").as(Boolean.class), Boolean.TRUE);
+        predicates.add(p2);
+        
+        Predicate p3 = b.equal(rootGroupUser.get("groupId").as(CustomGroup.class), this.getGroupById(groupId));
+        predicates.add(p3);
+        
+        q.multiselect(rootGroupUser.get("date"), rootUser.get("username"));
+        q.where(predicates.toArray(new Predicate[]{}));
+        
+        Query query = session.createQuery(q);
+        
+        return query.getResultList();
+    }
+    
+    @Override
+    public GroupUser getGroupUserByIds(int groupId) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> q = b.createQuery(Object[].class);
+        
+        Root root = q.from(GroupUser.class);
+        q.select(root);
+        
+        List<Predicate> predicates = new ArrayList<>();
+        Predicate p1 = b.equal(root.get("groupId"), this.getGroupById(groupId));
+        predicates.add(p1);
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        
+        Predicate p2 = b.equal(root.get("userId"), this.userRepository.getUserByUsername(currentPrincipalName));
+        predicates.add(p2);
+        
+        q.where(predicates.toArray(new Predicate[]{}));
+        
+        Query query = session.createQuery(q);
+        
+        return (GroupUser) query.getSingleResult();
+    }
+    
+    @Override
+    public boolean markFreeSchedule(GroupUser groupUser) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        
+        try {            
+            session.clear();
+            session.update(groupUser);
+            return true;
+        } catch (Exception ex) {
+            session.clear();
             ex.printStackTrace();
             return false;
         }

@@ -5,6 +5,7 @@
 package com.btl.repository;
 
 import com.btl.pojo.CustomGroup;
+import com.btl.pojo.GroupUser;
 import com.btl.pojo.User;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,10 @@ public interface GroupRepository {
     boolean joinGroup(CustomGroup group);
     List<Object[]> checkCurrentUserInGroup(int groupId);
     List<CustomGroup> getGroupsOfCurrentUser(Map<String, String> params, int pageSize, int page);
+    int countGroupsOfCurrentUser(Map<String, String> params);
     List<User> getUsersInGroup(Map<String, String> params, int pageSize, int page);
     boolean deleteUserFromGroup(int groupId, String username);
+    List<Object[]> getFreeSchedulesInGroup(int groupId);
+    GroupUser getGroupUserByIds(int groupId);
+    boolean markFreeSchedule(GroupUser groupUser);
 }

@@ -22,4 +22,6 @@ public interface ExpenseService {
     boolean updateExpense(Expense expense);
     Expense getExpenseById(int expenseId);
     List<Object[]> getUnconfirmedTotalExpenseOfUsersInGroup(Map<String, String> params);
+    List<Object[]> getExpenseStatsByMonth(int month, int year);
+    List<Object[]> getExpenseStatsByYear(int year);
 }

@@ -12,6 +12,7 @@ import com.btl.service.GroupService;
 import com.btl.service.IncomeService;
 import com.btl.service.UserService;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,12 +29,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 /**
  *
  * @author admin
  */
 @Controller
+@SessionAttributes("groupUser")
 public class GroupController {
 
     @Autowired
@@ -52,10 +55,16 @@ public class GroupController {
         model.addAttribute("group", new CustomGroup());
         model.addAttribute("groupUser", new GroupUser());
 
-        model.addAttribute("groups", this.groupService.getGroupsOfCurrentUser(params, 0, 0));
-
+        int pageSize = Integer.parseInt(params.getOrDefault("pageSize", env.getProperty("page.key.10")));
+        int page = Integer.parseInt(params.getOrDefault("page", "1"));
+        
+        model.addAttribute("groups", this.groupService.getGroupsOfCurrentUser(params, pageSize, page));
+        model.addAttribute("groupCounter", this.groupService.countGroupsOfCurrentUser(params));
+        
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("page", page);
         model.addAttribute("kw", params.getOrDefault("kw", ""));
-
+        
         return "group";
     }
 
@@ -92,9 +101,10 @@ public class GroupController {
     @GetMapping("/group/{groupId}")
     public String groupDetails(@PathVariable(value = "groupId") int groupId,
             Model model, @RequestParam Map<String, String> params) {
-
         List<Object[]> check = this.groupService.checkCurrentUserInGroup(groupId);
         if (Integer.parseInt(check.get(0)[0].toString()) > 0) {
+            model.addAttribute("groupUser", (GroupUser) this.groupService.getGroupUserByIds(groupId) );
+            
             model.addAttribute("joined", true);
             model.addAttribute("group", this.groupService.getGroupById(groupId));
 
@@ -104,22 +114,34 @@ public class GroupController {
             int page = Integer.parseInt(params.getOrDefault("page", "1"));
 
             List<Object[]> list = new ArrayList<>();
+            List<Object[]> listUnconfirmedTotalExpense = this.expenseService.getUnconfirmedTotalExpenseOfUsersInGroup(params);
+            List<Object[]> listUnconfirmedTotalIncome = this.incomeService.getUnconfirmedTotalIncomeOfUsersInGroup(params);
+            List<Object[]> listFreeSchedules = this.groupService.getFreeSchedulesInGroup(groupId);
+            
             for (User user : this.groupService.getUsersInGroup(params, pageSize, page)) {
                 BigDecimal eAmount = BigDecimal.ZERO;
                 BigDecimal iAmount = BigDecimal.ZERO;
-                for (Object[] unconfirmedTotalExpense : this.expenseService.getUnconfirmedTotalExpenseOfUsersInGroup(params)) {
+                Date date = null;
+                for (Object[] unconfirmedTotalExpense : listUnconfirmedTotalExpense) {
                     if (user.getUsername().equals(unconfirmedTotalExpense[1].toString())) {
                         eAmount = (BigDecimal) unconfirmedTotalExpense[0];
                         break;
                     }
                 }
-                for (Object[] unconfirmedTotalIncome : this.incomeService.getUnconfirmedTotalIncomeOfUsersInGroup(params)) {
+                for (Object[] unconfirmedTotalIncome : listUnconfirmedTotalIncome) {
                     if (user.getUsername().equals(unconfirmedTotalIncome[1].toString())) {
                         iAmount = (BigDecimal) unconfirmedTotalIncome[0];
                         break;
                     }
                 }
-                Object[] o = new Object[]{user, eAmount, iAmount};
+                for (Object[] freeSchedules : listFreeSchedules) {
+                    if (user.getUsername().equals(freeSchedules[1].toString())) {
+                        date = (Date) freeSchedules[0];
+                        break;
+                    }
+                }
+                
+                Object[] o = new Object[]{user, eAmount, iAmount, date};
                 list.add(o);
             }
             
@@ -152,5 +174,19 @@ public class GroupController {
         }
 
         return "group-details";
+    }
+    
+    @PostMapping("/group/{groupId}")
+    public String groupProcess(@PathVariable(value = "groupId") int groupId,
+            Model model, @ModelAttribute(value = "groupUser") @Valid GroupUser groupUser,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            return "group/" + groupId;
+        }
+        
+        if (this.groupService.markFreeSchedule(groupUser) == true)
+            return "redirect:/group/" + groupId;
+
+        return "group/" + groupId;
     }
 }

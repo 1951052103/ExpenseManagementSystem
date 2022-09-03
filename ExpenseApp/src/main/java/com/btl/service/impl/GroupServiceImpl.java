@@ -5,6 +5,7 @@
 package com.btl.service.impl;
 
 import com.btl.pojo.CustomGroup;
+import com.btl.pojo.GroupUser;
 import com.btl.pojo.User;
 import com.btl.repository.GroupRepository;
 import com.btl.service.GroupService;
@@ -45,7 +46,12 @@ public class GroupServiceImpl implements GroupService {
     
     @Override
     public List<CustomGroup> getGroupsOfCurrentUser(Map<String, String> params, int pageSize, int page) {
-        return this.groupRepository.getGroupsOfCurrentUser(params, page, page);
+        return this.groupRepository.getGroupsOfCurrentUser(params, pageSize, page);
+    }
+    
+    @Override
+    public int countGroupsOfCurrentUser(Map<String, String> params) {
+        return this.groupRepository.countGroupsOfCurrentUser(params);
     }
     
     @Override
@@ -56,5 +62,20 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public boolean deleteUserFromGroup(int groupId, String username) {
         return this.groupRepository.deleteUserFromGroup(groupId, username);
+    }
+    
+    @Override
+    public List<Object[]> getFreeSchedulesInGroup(int groupId) {
+        return this.groupRepository.getFreeSchedulesInGroup(groupId);
+    }
+    
+    @Override
+    public GroupUser getGroupUserByIds(int groupId) {
+        return this.groupRepository.getGroupUserByIds(groupId);
+    }
+    
+    @Override
+    public boolean markFreeSchedule(GroupUser groupUser) {
+        return this.groupRepository.markFreeSchedule(groupUser);
     }
 }

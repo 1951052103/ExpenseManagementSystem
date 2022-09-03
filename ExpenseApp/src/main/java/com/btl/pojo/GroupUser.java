@@ -5,6 +5,7 @@
 package com.btl.pojo;
 
 import java.io.Serializable;
+import java.sql.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,6 +41,8 @@ public class GroupUser implements Serializable {
     private Integer id;
     @Column(name = "is_leader")
     private Boolean isLeader;
+    @Column(name = "date")
+    private Date date;
     @Column(name = "active")
     private Boolean active;
     @JoinColumn(name = "group_id", referencedColumnName = "id")
@@ -50,6 +53,15 @@ public class GroupUser implements Serializable {
     private User userId;
 
     public GroupUser() {
+    }
+
+    public GroupUser(GroupUser groupUser) {
+        this.id = groupUser.id;
+        this.isLeader = groupUser.isLeader;
+        this.date = groupUser.date;
+        this.active = groupUser.active;
+        this.groupId = groupUser.groupId;
+        this.userId = groupUser.userId;
     }
 
     public GroupUser(Integer id) {
@@ -72,6 +84,14 @@ public class GroupUser implements Serializable {
         this.isLeader = isLeader;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+    
     public Boolean getActive() {
         return active;
     }

@@ -67,4 +67,14 @@ public class ExpenseServiceImpl implements ExpenseService{
     public List<Object[]> getUnconfirmedTotalExpenseOfUsersInGroup(Map<String, String> params) {
         return this.expenseRepository.getUnconfirmedTotalExpenseOfUsersInGroup(params);
     }
+    
+    @Override
+    public List<Object[]> getExpenseStatsByMonth(int month, int year) {
+        return this.expenseRepository.getExpenseStatsByMonth(month, year);
+    }
+    
+    @Override
+    public List<Object[]> getExpenseStatsByYear(int year) {
+        return this.expenseRepository.getExpenseStatsByYear(year);
+    }
 }

@@ -22,4 +22,5 @@ public interface IncomeService {
     boolean updateIncome(Income income);
     Income getIncomeById(int incomeId);
     List<Object[]> getUnconfirmedTotalIncomeOfUsersInGroup(Map<String, String> params);
+    List<Object[]> getIncomeStatsByYear(int year);
 }

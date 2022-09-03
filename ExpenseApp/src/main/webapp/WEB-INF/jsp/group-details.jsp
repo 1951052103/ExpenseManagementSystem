@@ -21,20 +21,36 @@
     <div>
         <div class="col-md-7">
             <h1 class="text-success"><spring:message code="label.groupId" />: ${group.id}</h1>
-            <h1 class="text-success"class="text-center text-danger"><spring:message code="label.groupName" />: ${group.name}</h1>
+            <h1 class="text-success"><spring:message code="label.groupName" />: ${group.name}</h1>
         </div>
 
+        <c:url value="/group/${group.id}" var="action" />
+        <form:form method="post" action="${action}" modelAttribute="groupUser">
+            <form:errors path="*" element="div" cssClass="alert alert-danger" />
+            
+            <div class="form-group">
+                <label for="date"><spring:message code="label.freeSchedule" /></label>
+                <form:input type="date" id="date" path="date" class="form-control" value="${groupUser.date}" required="required" />
+            </div>
+            
+            <br/>
+            <div class="form-group">
+                <input type="submit" value="<spring:message code="button.mark" />" class="btn btn-success" />
+            </div> 
+            <br/><br/>
+        </form:form>
+        
         <div>
             <label for="page-size" class="form-label"><spring:message code="label.pagesize" /></label>
             <select id="page-size" name="page-size" onchange="setPageSize(event)">
                 <c:forEach items="${sizes}" var="s" >
 
                     <c:choose>
-                        <c:when test="${pageSize == s.getValue()}">
-                            <option selected value="${s.getValue()}">${s.getKey()}</option>
+                        <c:when test="${pageSize == s[1]}">
+                            <option selected value="${s[1]}">${s[0]}</option>
                         </c:when>
                         <c:otherwise>
-                            <option value="${s.getValue()}">${s.getKey()}</option>
+                            <option value="${s[1]}">${s[0]}</option>
                         </c:otherwise>
                     </c:choose>
 
@@ -76,10 +92,12 @@
                 <th><spring:message code="label.username" /></th>
                 <th><spring:message code="label.firstName" /></th>
                 <th><spring:message code="label.lastName" /></th>
+                <th><spring:message code="label.freeSchedule" /></th>
                 <th><spring:message code="label.unconfirmedExpense" /></th>
                 <th><spring:message code="label.unconfirmedIncome" /></th>
                 <th></th>
             </tr>
+            <fmt:setLocale value = "<spring:message code='locale' />"/>
             <c:forEach items="${users}" var="u">
                 <tr id="user-row${u[0].id}">
                     <td>
@@ -93,10 +111,17 @@
                     </td>
                     
                     <td>
-                        ${u[1]}
+                        <fmt:formatDate pattern="yyyy-MM-dd" value="${u[3]}" var="date"/>
+                        ${date}
+                    </td>
+                    
+                    <td>
+                        <fmt:formatNumber type = "number" maxFractionDigits = "3" value = "${u[1]}" />
+                        <spring:message code="currency" />
                     </td>
                     <td>
-                        ${u[2]}
+                        <fmt:formatNumber type = "number" maxFractionDigits = "3" value = "${u[2]}" />
+                        <spring:message code="currency" />
                     </td>
                     
                     <c:if test="${isLeader == true && u[0].username != currentUser.username}">

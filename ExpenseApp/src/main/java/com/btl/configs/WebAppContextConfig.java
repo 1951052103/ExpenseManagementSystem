@@ -4,6 +4,8 @@
  */
 package com.btl.configs;
 
+import com.btl.formatters.GroupFormatter;
+import com.btl.formatters.UserFormatter;
 import com.btl.validator.SpringUserValidator;
 import com.btl.validator.WebAppValidator;
 import java.util.HashSet;
@@ -13,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -33,7 +36,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
     "com.btl.controllers",
     "com.btl.service",
     "com.btl.repository",
-    "com.btl.validator",})
+    "com.btl.validator",
+    "com.btl.formatters"
+})
 public class WebAppContextConfig implements WebMvcConfigurer {
 
     @Override
@@ -92,5 +97,11 @@ public class WebAppContextConfig implements WebMvcConfigurer {
         validator.setSpringValidators(springValidators);
 
         return validator;
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addFormatter(new GroupFormatter());
+        registry.addFormatter(new UserFormatter());
     }
 }
