@@ -20,10 +20,9 @@ CREATE TABLE `user` (
 	PRIMARY KEY (`id`)
 );
 
-INSERT INTO `user`(`username`, `password` ,`first_name`, `gender`, `role`) 
-VALUES ('admin', '$2a$10$IMc.iLFc2GlER.1nZT2or.IKqqnSB76N6Y5YRMHtYABYWrnPnExIK', 'admin', 1, 'ADMIN'),
-('user', '$2a$10$IMc.iLFc2GlER.1nZT2or.IKqqnSB76N6Y5YRMHtYABYWrnPnExIK', 'user', 1, 'USER'),
-('user1', '$2a$10$IMc.iLFc2GlER.1nZT2or.IKqqnSB76N6Y5YRMHtYABYWrnPnExIK', 'user1', 1, 'USER');
+INSERT INTO `user`(`username`, `password` ,`first_name`, `gender`, `role`, `email`) 
+VALUES ('admin', '$2a$10$IMc.iLFc2GlER.1nZT2or.IKqqnSB76N6Y5YRMHtYABYWrnPnExIK', 'admin', 1, 'ADMIN', '1951052103long@ou.edu.vn'),
+('user', '$2a$10$IMc.iLFc2GlER.1nZT2or.IKqqnSB76N6Y5YRMHtYABYWrnPnExIK', 'user', 1, 'USER', NULL);
 
 CREATE TABLE `custom_group` (
 	`id` int NOT NULL AUTO_INCREMENT,
