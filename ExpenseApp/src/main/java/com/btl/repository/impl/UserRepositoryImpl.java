@@ -107,7 +107,8 @@ public class UserRepositoryImpl implements UserRepository {
                 throw new IOException();
             }
             
-            user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword()));
+            user.setUsername(user.getUsername().trim());
+            user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword().trim()));
             user.setActive(Boolean.TRUE);
             user.setRegistrationDate(Date.valueOf(LocalDate.now()));
             
@@ -197,7 +198,9 @@ public class UserRepositoryImpl implements UserRepository {
         Session session = this.sessionFactory.getObject().getCurrentSession();
         
         try {
-            user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword()));
+            user.setUsername(user.getUsername().trim());
+            System.out.println(user.getUsername().trim());
+            user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword().trim()));
             
             session.clear();
             session.update(user);

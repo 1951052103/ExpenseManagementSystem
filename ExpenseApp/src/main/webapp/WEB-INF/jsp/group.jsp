@@ -17,6 +17,8 @@
 <div>
     <c:url value="/group" var="action" />
     <form:form method="post" action="${action}"  modelAttribute="group">
+        <form:errors path="*" element="div" cssClass="alert alert-danger" />
+        
         <div class="form-group">
             <label for="name"><spring:message code="label.groupName" /></label>
             <form:input type="text" id="name" path="name" class="form-control" required="required" />

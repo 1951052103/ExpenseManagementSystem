@@ -16,22 +16,13 @@
 
 <h1 class="text-center text-danger"><spring:message code="label.home" /></h1>
 
-<div>
-    <c:if test="${currentMonthExpense > currentMonthIncome}">
+<div> 
+    <c:if test="${warning != ''}">
         <p class="alert alert-danger">
-            <spring:message code="label.currentMonth.warning" />
-        </p>
-    </c:if>   
-    <c:if test="${currentMonthExpense > lastMonthExpense}">
-        <p class="alert alert-danger">
-            <spring:message code="label.lastMonth.warning" />
+            ${warning}
         </p>
     </c:if>
-    <c:if test="${currentMonthExpense > lastYearExpense}">
-        <p class="alert alert-danger">
-            <spring:message code="label.lastYear.warning" />
-        </p>
-    </c:if>
+
 </div>
 
 <fmt:setLocale value = "<spring:message code='locale' />"/>
@@ -136,6 +127,56 @@
         </div>
     </div> 
 
+    <div class="col-md-6 col-xs-12"" style="padding:10px;">
+        <div class="card bg-info">
+            <c:url value="/expense" var="expenseUrl">
+                <c:param name="fromDate" value="${cqfd}" />
+                <c:param name="toDate" value="${cqtd}" />
+            </c:url>
+            <div class="card-body">
+                <h4 class="card-title text-light"><spring:message code="label.currentQuarterExpense" /></h4>
+                <p class="card-text text-end text-light">
+                    <c:choose>
+                        <c:when test="${currentQuarterExpense > 0}">
+                            <fmt:formatNumber type = "number" maxFractionDigits = "3" value = "${currentQuarterExpense}" /> <spring:message code="currency" />
+                        </c:when>
+                        <c:otherwise>
+                            0 <spring:message code="currency" />
+                        </c:otherwise>
+                    </c:choose>
+                </p>
+                <div class="d-flex flex-row-reverse">
+                    <a href="${expenseUrl}" class="btn btn-primary"><spring:message code="label.detail" /></a>
+                </div>
+            </div>
+        </div>
+    </div>            
+                
+    <div class="col-md-6 col-xs-12"" style="padding:10px;">
+        <div class="card bg-info">
+            <c:url value="/expense" var="expenseUrl">
+                <c:param name="fromDate" value="${lqfd}" />
+                <c:param name="toDate" value="${lqtd}" />
+            </c:url>
+            <div class="card-body">
+                <h4 class="card-title text-light"><spring:message code="label.lastQuarterExpense" /></h4>
+                <p class="card-text text-end text-light">
+                    <c:choose>
+                        <c:when test="${lastQuarterExpense > 0}">
+                            <fmt:formatNumber type = "number" maxFractionDigits = "3" value = "${lastQuarterExpense}" /> <spring:message code="currency" />
+                        </c:when>
+                        <c:otherwise>
+                            0 <spring:message code="currency" />
+                        </c:otherwise>
+                    </c:choose>
+                </p>
+                <div class="d-flex flex-row-reverse">
+                    <a href="${expenseUrl}" class="btn btn-primary"><spring:message code="label.detail" /></a>
+                </div>
+            </div>
+        </div>
+    </div>              
+                
     <div>
         <form method="get" class="d-flex">
             <div class="mb-3 mt-3">
@@ -156,7 +197,7 @@
             </div> 
 
         </form>
-    </div>            
+    </div>     
      
     <h3 class="text-success"><spring:message code="label.expenseStatsByMonth" /></h3>         
     <div class="row">
