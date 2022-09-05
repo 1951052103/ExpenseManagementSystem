@@ -379,6 +379,13 @@ public class IncomeRepositoryImpl implements IncomeRepository {
         
         List<Predicate> predicates = new ArrayList<>();
         
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        Predicate p3 = b.equal(root.get("userId").as(User.class),
+                this.userRepository.getUserByUsername(currentPrincipalName));
+        predicates.add(p3);
+        
         Predicate p2 = b.equal(b.function("YEAR", Integer.class, root.get("date")), year);
         predicates.add(p2);
         

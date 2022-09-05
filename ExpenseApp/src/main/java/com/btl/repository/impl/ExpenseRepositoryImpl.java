@@ -382,6 +382,13 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         
         List<Predicate> predicates = new ArrayList<>();
         
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        Predicate p3 = b.equal(root.get("userId").as(User.class),
+                this.userRepository.getUserByUsername(currentPrincipalName));
+        predicates.add(p3);
+        
         Predicate p1 = b.equal(b.function("MONTH", Integer.class, root.get("date")), month);
         predicates.add(p1);
         
@@ -407,6 +414,13 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
         Root root = q.from(Expense.class);
         
         List<Predicate> predicates = new ArrayList<>();
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        Predicate p3 = b.equal(root.get("userId").as(User.class),
+                this.userRepository.getUserByUsername(currentPrincipalName));
+        predicates.add(p3);
         
         Predicate p2 = b.equal(b.function("YEAR", Integer.class, root.get("date")), year);
         predicates.add(p2);

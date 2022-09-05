@@ -22,6 +22,7 @@ CREATE TABLE `user` (
 
 INSERT INTO `user`(`username`, `password` ,`first_name`, `gender`, `role`, `email`) 
 VALUES ('admin', '$2a$10$IMc.iLFc2GlER.1nZT2or.IKqqnSB76N6Y5YRMHtYABYWrnPnExIK', 'admin', 1, 'ADMIN', '1951052103long@ou.edu.vn'),
+('admin1', '$2a$10$IMc.iLFc2GlER.1nZT2or.IKqqnSB76N6Y5YRMHtYABYWrnPnExIK', 'admin1', 1, 'ADMIN', NULL),
 ('user', '$2a$10$IMc.iLFc2GlER.1nZT2or.IKqqnSB76N6Y5YRMHtYABYWrnPnExIK', 'user', 1, 'USER', NULL);
 
 CREATE TABLE `custom_group` (
